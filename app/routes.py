@@ -3,10 +3,9 @@ from app import app
 from app import controllers
 from app import services
 from app import models
-@app.route('/convert_text', methods=['GET', 'POST'])
+@app.route('/', methods=['GET', 'POST'])
 def listen():
-    surveyDa = request.get_json()
-    return controllers.AudioController.listen(surveyDa)
+    return jsonify({"message":'Successfully running'})
 
 
 @app.route('/signup', methods=['GET', 'POST'])
