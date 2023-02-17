@@ -1,6 +1,7 @@
 from flask import jsonify, request
 from app import app
 from app import controllers
+from app import services
 @app.route('/convert_text', methods=['GET', 'POST'])
 def listen():
     surveyDa = request.get_json()
@@ -25,3 +26,15 @@ def login():
     except:
         print("Error")
         
+
+
+
+
+@app.route('/summarize', methods=['GET', 'POST'])
+def summary():
+    text_obj = request.get_json()
+    input_text = text_obj['text']
+    try:
+        return services.Service.listen(input_text)
+    except:
+        return "Error"
