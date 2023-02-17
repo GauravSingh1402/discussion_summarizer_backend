@@ -26,14 +26,12 @@ class AudioController:
             else:
                 return "Fill All The Details"
         except Exception as e:
+            print(e)
             return "error"
     def login(x):
         try:
-            print("Yo")
             if(x['email']!=''):
-                print("Honey Singh")
                 email = x['email']
-                print(email)
                 result =  db.user.find_one({"email":email,},{'_id': 0, 'first_name': 1, 'last_name': 1})
             return result
         except Exception as e:
