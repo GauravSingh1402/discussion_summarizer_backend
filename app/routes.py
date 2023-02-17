@@ -2,6 +2,7 @@ from flask import jsonify, request
 from app import app
 from app import controllers
 from app import services
+from app import models
 @app.route('/convert_text', methods=['GET', 'POST'])
 def listen():
     surveyDa = request.get_json()
@@ -43,6 +44,13 @@ def summary():
     text_obj = request.get_json()
     input_text = text_obj['text']
     try:
-        return services.Service.listen(input_text)
+        processed_text = services.Service.listen(input_text)
+        t5_summary = models.SummarizerModel.t5_summarizer(processed_text)
+        bart_summary = models.SummarizerModel.bart(processed_text)
+        summary = {
+            't5_summary':t5_summary,
+            'bart_summary':bart_summary 
+        }
+        return jsonify({"summary": summary}),200
     except:
         return "Error"
