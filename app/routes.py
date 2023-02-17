@@ -6,6 +6,7 @@ def listen():
     surveyDa = request.get_json()
     return controllers.AudioController.listen(surveyDa)
 
+
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
     userData = request.get_json()
@@ -13,6 +14,8 @@ def signup():
          return controllers.AudioController.signup(userData)
     except:
         print("Error")
+        
+
         
 @app.route('/login', methods=['GET', 'POST'])
 def login():

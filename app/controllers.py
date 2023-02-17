@@ -5,6 +5,8 @@ from datetime import datetime
 class AudioController:
     def listen(x):
         return x
+
+
     def signup(x):
         try:
             if(x['email']!='' or x['first_name']!='' or x['last_name']!=''):
@@ -28,6 +30,8 @@ class AudioController:
         except Exception as e:
             print(e)
             return "error"
+
+            
     def login(x):
         try:
             if(x['email']!=''):
