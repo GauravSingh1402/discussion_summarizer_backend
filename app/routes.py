@@ -26,6 +26,14 @@ def login():
     except:
         print("Error")
         
+        
+@app.route('/auth', methods=['GET', 'POST'])
+def auth():
+    try:
+         return controllers.AudioController.auth()
+    except:
+        print("Error")
+        
 
 
 

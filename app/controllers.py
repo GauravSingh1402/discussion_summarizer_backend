@@ -1,7 +1,8 @@
-from flask import jsonify, request
+from flask import jsonify, request,session
 from app import app
 from app import db
 from datetime import datetime
+from flask_session import Session
 class AudioController:
     def listen(x):
         return x
@@ -37,7 +38,28 @@ class AudioController:
             if(x['email']!=''):
                 email = x['email']
                 result =  db.user.find_one({"email":email,},{'_id': 0, 'first_name': 1, 'last_name': 1})
-            return result
+                print(result)
+                if(result!= None):
+                    session["user"] = email
+                    print(session)
+                    return "login"
+                else:
+                    return "user doesnt exsist"
+            else:
+                return 'Sign up first'
+        except Exception as e:
+            print(e)
+            return "error"
+        
+        
+    def auth():
+        try:
+            user_id = session.get("user")
+            print(user_id)
+            if not user_id:
+                return jsonify({"error": "Unauthorized"}), 401
+            else:
+                return jsonify({"user_id": user_id}),200
         except Exception as e:
             print(e)
             return "error"
