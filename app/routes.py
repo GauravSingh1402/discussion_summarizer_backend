@@ -7,7 +7,6 @@ from app import models
 def listen():
     return jsonify({"message":'Successfully running'})
 
-
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
     userData = request.get_json()
