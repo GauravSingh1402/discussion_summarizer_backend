@@ -41,13 +41,19 @@ def auth():
 def summary():
     text_obj = request.get_json()
     input_text = text_obj['text']
+    stop_words = text_obj['limit']
+    top = text_obj['top']
+    print(top)
     try:
         processed_text = services.Service.listen(input_text)
-        t5_summary = models.SummarizerModel.t5_summarizer(processed_text)
-        bart_summary = models.SummarizerModel.bart(processed_text)
+        t5_summary = models.SummarizerModel.t5_summarizer(processed_text,stop_words,top)
+        lsa = models.SummarizerModel.lsa(input_text,stop_words)
+        kl = models.SummarizerModel.kl(input_text,stop_words)
+        
         summary = {
             't5_summary':t5_summary,
-            'bart_summary':bart_summary 
+            'lsa': lsa,
+            'kl':kl
         }
         return jsonify({"summary": summary}),200
     except:

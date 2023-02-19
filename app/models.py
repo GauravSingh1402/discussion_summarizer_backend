@@ -1,42 +1,45 @@
 import torch
+from flask import Flask, jsonify, request
+import requests
 from transformers import T5ForConditionalGeneration, T5Tokenizer
 from transformers import BartForConditionalGeneration, BartTokenizer, BartConfig
 from sumy.summarizers.lsa import LsaSummarizer
 from sumy.nlp.tokenizers import Tokenizer
 from sumy.parsers.plaintext import PlaintextParser
-import gensim
-from gensim.summarization import summarize
+from sumy.summarizers.kl import KLSummarizer
+import time
+# from gensim.summarization import summarize
 
-bart_tokenizer=BartTokenizer.from_pretrained('facebook/bart-large-cnn')
-bart_model=BartForConditionalGeneration.from_pretrained('facebook/bart-large-cnn')
-t5_model = T5ForConditionalGeneration.from_pretrained('t5-large')
-t5_tokenizer = T5Tokenizer.from_pretrained('t5-large')
+# bart_tokenizer=BartTokenizer.from_pretrained('facebook/bart-large-cnn')
+# bart_model=BartForConditionalGeneration.from_pretrained('facebook/bart-large-cnn')
+import requests
+
+
+API_URL = "https://api-inference.huggingface.co/models/Hridayesh7/autotrain-summasense-3584196302"
+
 
 class SummarizerModel:
-    def t5_summarizer(text,stop_words):
+    def t5_summarizer(text,stop_words,top):
         try:
-            text="summarize:"+text
-            input_ids=t5_tokenizer.encode(text, return_tensors='pt', max_length=4000)
-            summary_ids = t5_model.generate(input_ids,
-                             early_stopping=True,
-                             max_length=stop_words,
-                             min_length=100,
-                             )
-            summary_ids
-            t5_summary = t5_tokenizer.decode(summary_ids[0])
-            return t5_summary
-        except Exception as e:
-            print(e)
-            return "error"
-    def bart(text,stop_words):
-        try:
-            inputs = bart_tokenizer.batch_encode_plus([text],return_tensors='pt')
-            summary_ids = bart_model.generate(inputs['input_ids'], 
-                             early_stopping=True,
-                             max_length=stop_words,
-                             min_length=100,)
-            bart_summary = bart_tokenizer.decode(summary_ids[0], skip_special_tokens=True)
-            return bart_summary
+            while True:
+                loading_response = requests.get(API_URL)
+                if loading_response.json()["model_status"]["ready"]:
+                    break
+                time.sleep(loading_response.json()["model_status"]["estimated_time"])
+            headers = {"Authorization": "Bearer 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"}
+            data = {
+                "inputs": f"summarize: {text}",
+                 "parameters": {
+                    "do_sample": True,
+                    "max_length": stop_words,
+                    "top_k": top,
+                    "num_return_sequences": 1,
+                    },
+                }
+            response = requests.post(API_URL, headers=headers, json=data)
+            print("Yup",response.json())
+            summary = response.json()[0]['summary_text']
+            return summary
         except Exception as e:
             print(e)
             return "error"
@@ -46,16 +49,21 @@ class SummarizerModel:
             parser=PlaintextParser.from_string(text,Tokenizer('english'))
             lsa_summarizer=LsaSummarizer()
             lsa_summary= str(list(lsa_summarizer(parser.document,stop_words)))
-            print(lsa_summary)
+            lsa_summary = lsa_summary[11:]
+            lsa_summary = lsa_summary[:-1]
             return lsa_summary
         except Exception as e:
             print(e)
             return "error"
-    def gensim(text,stop_words):
+
+    def kl(text,stop_words):
         try:
-            short_summary = summarize(text,stop_words)
-            print(short_summary)
-            return short_summary
+            parser=PlaintextParser.from_string(text,Tokenizer('english'))
+            kl_summarizer=KLSummarizer()
+            kl_summary=str(list(kl_summarizer(parser.document,stop_words)))
+            kl_summary = kl_summary[11:]
+            kl_summary = kl_summary[:-1]
+            return kl_summary
         except Exception as e:
             print(e)
             return "error"

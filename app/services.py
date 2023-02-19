@@ -12,11 +12,9 @@ class Service:
             nltk.download('wordnet')
             nltk.download('punkt')
             lemmatizer = WordNetLemmatizer()
-            print(text)
             clean_text = ' '.join([lemmatizer.lemmatize(word) for word in text.split() if word not in nltk.corpus.stopwords.words('english') and word not in string.punctuation])
             for k in clean_text.split("\n"):
                 clean_text = re.sub(r"[^a-zA-Z0-9]+", ' ', k)
-            print(clean_text)
             return clean_text
         except Exception as e:
             print(e)
