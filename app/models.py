@@ -1,17 +1,11 @@
 import torch
 from flask import Flask, jsonify, request
 import requests
-from transformers import T5ForConditionalGeneration, T5Tokenizer
-from transformers import BartForConditionalGeneration, BartTokenizer, BartConfig
 from sumy.summarizers.lsa import LsaSummarizer
 from sumy.nlp.tokenizers import Tokenizer
 from sumy.parsers.plaintext import PlaintextParser
 from sumy.summarizers.kl import KLSummarizer
 import time
-# from gensim.summarization import summarize
-
-# bart_tokenizer=BartTokenizer.from_pretrained('facebook/bart-large-cnn')
-# bart_model=BartForConditionalGeneration.from_pretrained('facebook/bart-large-cnn')
 import requests
 
 
