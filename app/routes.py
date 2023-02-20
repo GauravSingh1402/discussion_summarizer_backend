@@ -54,18 +54,18 @@ def summary():
     num_sent = text_obj['num_sent']
     print(top)
     try:
-        # processed_text = services.Service.listen(input_text)
-        # t5_summary = models.SummarizerModel.t5_summarizer(processed_text,stop_words,top)
-        # # gpt = models.SummarizerModel.gpt(input_text)
-        # lsa = models.SummarizerModel.lsa(input_text,num_sent)
-        # kl = models.SummarizerModel.kl(input_text,num_sent)
+        processed_text = services.Service.listen(input_text)
+        t5_summary = models.SummarizerModel.t5_summarizer(processed_text,stop_words,top)
+        # gpt = models.SummarizerModel.gpt(input_text)
+        lsa = models.SummarizerModel.lsa(input_text,num_sent)
+        kl = models.SummarizerModel.kl(input_text,num_sent)
         
-        # summary = {
-        #     't5_summary':t5_summary,
-        #     'lsa': lsa,
-        #     'kl':kl,
-        #     'gpt':'Ho raha hai'
-        # }
+        summary = {
+            't5_summary':t5_summary,
+            'lsa': lsa,
+            'kl':kl,
+            'gpt':'Ho raha hai'
+        }
         return jsonify({"summary": summary}),200
     except:
         return "Error"
