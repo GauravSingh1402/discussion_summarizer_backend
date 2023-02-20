@@ -3,6 +3,19 @@ from app import app
 from app import controllers
 from app import services
 from app import models
+from transformers import BartForConditionalGeneration, BartTokenizer
+
+model = BartForConditionalGeneration.from_pretrained('facebook/bart-large-cnn')
+tokenizer = BartTokenizer.from_pretrained('facebook/bart-large-cnn')
+import os
+
+save_directory = 'models/bart-large-cnn'
+
+if not os.path.exists(save_directory):
+    os.makedirs(save_directory)
+
+model.save_pretrained(save_directory)
+tokenizer.save_pretrained(save_directory)
 @app.route('/', methods=['GET', 'POST'])
 def listen():
     return jsonify({"message":'Successfully running'})
@@ -43,18 +56,21 @@ def summary():
     input_text = text_obj['text']
     stop_words = text_obj['limit']
     top = text_obj['top']
+    num_sent = text_obj['num_sent']
     print(top)
     try:
-        processed_text = services.Service.listen(input_text)
-        t5_summary = models.SummarizerModel.t5_summarizer(processed_text,stop_words,top)
-        lsa = models.SummarizerModel.lsa(input_text,stop_words)
-        kl = models.SummarizerModel.kl(input_text,stop_words)
+        # processed_text = services.Service.listen(input_text)
+        # t5_summary = models.SummarizerModel.t5_summarizer(processed_text,stop_words,top)
+        # # gpt = models.SummarizerModel.gpt(input_text)
+        # lsa = models.SummarizerModel.lsa(input_text,num_sent)
+        # kl = models.SummarizerModel.kl(input_text,num_sent)
         
-        summary = {
-            't5_summary':t5_summary,
-            'lsa': lsa,
-            'kl':kl
-        }
+        # summary = {
+        #     't5_summary':t5_summary,
+        #     'lsa': lsa,
+        #     'kl':kl,
+        #     'gpt':'Ho raha hai'
+        # }
         return jsonify({"summary": summary}),200
     except:
         return "Error"
