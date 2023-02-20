@@ -63,3 +63,12 @@ class AudioController:
         except Exception as e:
             print(e)
             return "error"
+        
+    def logout():
+        try:
+            session.pop("user")
+            print("Logout successful")
+            return "logout"
+        except Exception as e:
+            print(e)
+            return "error"

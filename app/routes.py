@@ -38,6 +38,13 @@ def login():
     except:
         print("Error")
         
+@app.route('/logout', methods=['GET', 'POST'])
+def logout():
+    try:
+         return controllers.AudioController.logout()
+    except:
+        print("Error")
+        
         
 @app.route('/auth', methods=['GET', 'POST'])
 def auth():
