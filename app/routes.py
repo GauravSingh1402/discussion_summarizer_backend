@@ -3,19 +3,7 @@ from app import app
 from app import controllers
 from app import services
 from app import models
-from transformers import BartForConditionalGeneration, BartTokenizer
 
-model = BartForConditionalGeneration.from_pretrained('facebook/bart-large-cnn')
-tokenizer = BartTokenizer.from_pretrained('facebook/bart-large-cnn')
-import os
-
-save_directory = 'models/bart-large-cnn'
-
-if not os.path.exists(save_directory):
-    os.makedirs(save_directory)
-
-model.save_pretrained(save_directory)
-tokenizer.save_pretrained(save_directory)
 @app.route('/', methods=['GET', 'POST'])
 def listen():
     return jsonify({"message":'Successfully running'})
