@@ -12,34 +12,16 @@ from sklearn.decomposition import TruncatedSVD
 from nltk.tokenize import sent_tokenize, word_tokenize
 from nltk.corpus import stopwords
 from collections import Counter
+import transformers
+import os
+
+
 API_URL = "https://api-inference.huggingface.co/models/Hridayesh7/autotrain-summasense-3584196302"
 
 
+
 class SummarizerModel:
-    def t5_summarizer(text,stop_words,top):
-        try:
-            while True:
-                loading_response = requests.get(API_URL)
-                if loading_response.json()["model_status"]["ready"]:
-                    break
-                time.sleep(loading_response.json()["model_status"]["estimated_time"])
-            headers = {"Authorization": "Bearer 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"}
-            data = {
-                "inputs": f"summarize: {text}",
-                 "parameters": {
-                    "do_sample": True,
-                    "max_length": stop_words,
-                    "top_k": top,
-                    "num_return_sequences": 1,
-                    },
-                }
-            response = requests.post(API_URL, headers=headers, json=data)
-            print("Yup",response.json())
-            summary = response.json()[0]['summary_text']
-            return summary
-        except Exception as e:
-            print("K",e)
-            return "error"
+
 
     def gpt(text):
         try:
