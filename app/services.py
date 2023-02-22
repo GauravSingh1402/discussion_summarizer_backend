@@ -3,9 +3,9 @@ from app import app
 import re
 import string
 import nltk
+from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
 from nltk.tokenize import sent_tokenize, word_tokenize
-from nltk.corpus import stopwords
 from collections import Counter
 import numpy as np
 
@@ -22,7 +22,7 @@ class Service:
                 clean_text = re.sub(r"[^a-zA-Z0-9]+", ' ', k)
             return clean_text
         except Exception as e:
-            print(e)
+            print('s',e)
             return "error"
     def preprocess_text(text):
         stop_words = set(stopwords.words('english'))

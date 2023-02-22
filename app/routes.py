@@ -33,6 +33,15 @@ def logout():
     except:
         print("Error")
         
+@app.route('/title', methods=['GET', 'POST'])
+def title():
+    sum = request.get_json()
+    text=sum['text']
+    try:
+         return models.SummarizerModel.title(text)
+    except:
+        print("Error")
+        
         
 @app.route('/auth', methods=['GET', 'POST'])
 def auth():
@@ -41,8 +50,6 @@ def auth():
     except:
         print("Error")
         
-
-
 
 
 @app.route('/summarize', methods=['GET', 'POST'])
@@ -67,5 +74,6 @@ def summary():
             'gpt':'Ho raha hai'
         }
         return jsonify({"summary": summary}),200
-    except:
-        return "Error"
+    except Exception as e:
+            print('kl',e)
+            return 'error'
