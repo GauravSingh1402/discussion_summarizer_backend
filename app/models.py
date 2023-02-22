@@ -5,12 +5,12 @@ import time
 import openai
 import numpy as np
 import nltk
+from transformers import pipeline
 from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.decomposition import TruncatedSVD
 from nltk.tokenize import sent_tokenize, word_tokenize
-from nltk.corpus import stopwords
 from collections import Counter
 import transformers
 import os
@@ -21,22 +21,58 @@ API_URL = "https://api-inference.huggingface.co/models/Hridayesh7/autotrain-summ
 
 
 class SummarizerModel:
-
-
-    def gpt(text):
+    def title(text):
+        print('input',text)
         try:
-            openai.api_key = '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'
-            model_engine = "text-davinci-002"
-            prompt_prefix = "Please summarize the following text:"
-            temperature = 0.7
-            max_tokens = 200
-            prompt = prompt_prefix + "\n" + text
-            response = openai.Completion.create(engine=model_engine, prompt=prompt, temperature=temperature, max_tokens=max_tokens)
-            summary = response.choices[0].text.strip()
-            return summary
+            summary_gen = pipeline("summarization")
+            title = summary_gen(text, max_length=20, min_length=5)
+            print('tit',title)
+            return title
         except Exception as e:
             print("H",e)
             return "error"
+        
+    def t5_summarizer(text,stop_words,top):
+        try:
+            while True:
+                loading_response = requests.get(API_URL)
+                if loading_response.json()["model_status"]["ready"]:
+                    break
+                time.sleep(loading_response.json()["model_status"]["estimated_time"])
+            headers = {"Authorization": "Bearer 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"}
+            data = {
+                "inputs": f"summarize: {text}",
+                 "parameters": {
+                    "do_sample": True,
+                    "max_length": stop_words,
+                    "top_k": top,
+                    "num_return_sequences": 1,
+                    },
+                }
+            response = requests.post(API_URL, headers=headers, json=data)
+            print("Yup",response.json())
+            summary = response.json()[0]['summary_text']
+            title=SummarizerModel.title(summary)
+            return jsonify({"summary": summary,"title":title}),200
+        except Exception as e:
+            print("K",e)
+            return "error"
+
+    # def gpt(text):
+    #     try:
+    #         openai.api_key = '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'
+    #         model_engine = "text-davinci-002"
+    #         prompt_prefix = "Please summarize the following text:"
+    #         temperature = 0.7
+    #         max_tokens = 200
+    #         prompt = prompt_prefix + "\n" + text
+    #         response = openai.Completion.create(engine=model_engine, prompt=prompt, temperature=temperature, max_tokens=max_tokens)
+    #         summary = response.choices[0].text.strip()
+    #         title=SummarizerModel.title(summary)
+    #         return jsonify({"summary": summary,"title":title}),200
+    #     except Exception as e:
+    #         print("H",e)
+    #         return "error"
 
         
     def lsa(text,num_sent):
@@ -58,9 +94,11 @@ class SummarizerModel:
             top_sentence_indices = np.argsort(sentence_scores.flatten())[::-1][:num_sent]
             top_sentence_indices.sort()
             summary = ' '.join([sentences[i] for i in top_sentence_indices])
-            return summary
+            print(summary)
+            title=SummarizerModel.title(summary)
+            return jsonify({"summary": summary,"title":title}),200
         except Exception as e:
-            print(e)
+            print('l',e)
             return "error"
 
 
@@ -95,8 +133,12 @@ class SummarizerModel:
                     if new_sentence_score > sentence_kl_div:
                         summary = summary.replace(summary.split()[-1], sentence, 1)
             summary = summary.strip()
-            return summary
+            print(summary)
+            title=SummarizerModel.title(summary)
+            return jsonify({"summary": summary,"title":title}),200
         except Exception as e:
-            print(e)
+            print('kl',e)
             return 'error'
+        
+ 
 
