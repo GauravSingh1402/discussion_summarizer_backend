@@ -1,5 +1,5 @@
 from flask import jsonify, request, session, Response
-from app import app
+# from app import app
 from app import db
 from datetime import datetime
 from flask_session import Session
