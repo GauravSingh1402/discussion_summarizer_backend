@@ -1,3 +1,4 @@
+from app import app
 from app import routes
 from flask_cors import CORS
 from flask_pymongo import pymongo
