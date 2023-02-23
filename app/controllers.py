@@ -1,8 +1,10 @@
-from flask import jsonify, request,session
+from flask import jsonify, request,session,Response
 from app import app
-# from app import db
+from app import db
 from datetime import datetime
 from flask_session import Session
+from flask_jwt_extended import create_access_token,get_jwt,get_jwt_identity, \
+                               unset_jwt_cookies, jwt_required, JWTManager
 class AudioController:
     def listen(x):
         return x
@@ -40,9 +42,11 @@ class AudioController:
                 result =  db.user.find_one({"email":email,},{'_id': 0, 'first_name': 1, 'last_name': 1})
                 print(result)
                 if(result!= None):
-                    session["user"] = email
-                    print(session)
-                    return "login"
+                    access_token = create_access_token(identity=email)
+                    resp = Response('login successfull',status=200)
+                    resp.set_cookie('jwt', access_token, httponly=True, secure=True)
+                    print(access_token)
+                    return resp
                 else:
                     return "user doesnt exsist"
             else:
@@ -54,8 +58,9 @@ class AudioController:
         
     def auth():
         try:
-            user_id = session.get("user")
-            print(user_id)
+            print(request.cookies)
+            user_id = request.cookies.get('jwt')
+            print('user_id',user_id)
             if not user_id:
                 return jsonify({"error": "Unauthorized"}), 401
             else:
@@ -66,9 +71,9 @@ class AudioController:
         
     def logout():
         try:
-            session.pop("user")
-            print("Logout successful")
-            return "logout"
+            response = jsonify({"msg": "logout successful"})
+            unset_jwt_cookies(response)
+            return response
         except Exception as e:
             print(e)
             return "error"
