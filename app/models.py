@@ -5,80 +5,69 @@ import time
 import openai
 import numpy as np
 import nltk
+from transformers import pipeline
 from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.decomposition import TruncatedSVD
 from nltk.tokenize import sent_tokenize, word_tokenize
-from nltk.corpus import stopwords
 from collections import Counter
-import random
-import sys
-
-from keras.callbacks import LambdaCallback
-from keras.models import Sequential
-from keras.layers import Dense, LSTM
-
-
 API_URL = "https://api-inference.huggingface.co/models/Hridayesh7/autotrain-summasense-3584196302"
 
 
-
 class SummarizerModel:
-
-
-    def title_generator(text):
-        chars = sorted(list(set(text)))
-        char_indices = dict((c, i) for i, c in enumerate(chars))
-        indices_char = dict((i, c) for i, c in enumerate(chars))
-
-        # Cut the text into subsequences of a fixed length
-        maxlen = 40
-        step = 3
-        sentences = []
-        next_chars = []
-        for i in range(0, len(text) - maxlen, step):
-            sentences.append(text[i : i + maxlen])
-            next_chars.append(text[i + maxlen])
-            
-        # Vectorize the sentences and next_chars
-        x = np.zeros((len(sentences), maxlen, len(chars)), dtype=np.bool)
-        y = np.zeros((len(sentences), len(chars)), dtype=np.bool)
-        for i, sentence in enumerate(sentences):
-            for t, char in enumerate(sentence):
-                x[i, t, char_indices[char]] = 1
-            y[i, char_indices[next_chars[i]]] = 1
-        model = Sequential()
-        model.add(LSTM(128, input_shape=(maxlen, len(chars))))
-        model.add(Dense(len(chars), activation="softmax"))
-
-        # Compile the model
-        model.compile(loss="categorical_crossentropy", optimizer="adam")
-
-        # Define a function to sample a character from the model's output distribution
-        def sample(preds, temperature=1.0):
-            preds = np.asarray(preds).astype("float64")
-            preds = np.log(preds) / temperature
-            exp_preds = np.exp(preds)
-            preds = exp_preds / np.sum(exp_preds)
-            probas = np.random.multinomial(1, preds, 1)
-            return np.argmax(probas)
-
-        
-    def gpt(text):
+    def title(text):
+        print('input',text)
         try:
-            openai.api_key = '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'
-            model_engine = "text-davinci-002"
-            prompt_prefix = "Please summarize the following text:"
-            temperature = 0.7
-            max_tokens = 200
-            prompt = prompt_prefix + "\n" + text
-            response = openai.Completion.create(engine=model_engine, prompt=prompt, temperature=temperature, max_tokens=max_tokens)
-            summary = response.choices[0].text.strip()
-            return summary
+            summary_gen = pipeline("summarization")
+            title = summary_gen(text, max_length=20, min_length=5)
+            print('tit',title)
+            return title
         except Exception as e:
             print("H",e)
             return "error"
+        
+    def t5_summarizer(text,stop_words,top):
+        try:
+            while True:
+                loading_response = requests.get(API_URL)
+                if loading_response.json()["model_status"]["ready"]:
+                    break
+                time.sleep(loading_response.json()["model_status"]["estimated_time"])
+            headers = {"Authorization": "Bearer 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"}
+            data = {
+                "inputs": f"summarize: {text}",
+                 "parameters": {
+                    "do_sample": True,
+                    "max_length": stop_words,
+                    "top_k": top,
+                    "num_return_sequences": 1,
+                    },
+                }
+            response = requests.post(API_URL, headers=headers, json=data)
+            print("Yup",response.json())
+            summary = response.json()[0]['summary_text']
+            title=SummarizerModel.title(summary)
+            return jsonify({"summary": summary,"title":title}),200
+        except Exception as e:
+            print("K",e)
+            return "error"
+
+    # def gpt(text):
+    #     try:
+    #         openai.api_key = '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'
+    #         model_engine = "text-davinci-002"
+    #         prompt_prefix = "Please summarize the following text:"
+    #         temperature = 0.7
+    #         max_tokens = 200
+    #         prompt = prompt_prefix + "\n" + text
+    #         response = openai.Completion.create(engine=model_engine, prompt=prompt, temperature=temperature, max_tokens=max_tokens)
+    #         summary = response.choices[0].text.strip()
+    #         title=SummarizerModel.title(summary)
+    #         return jsonify({"summary": summary,"title":title}),200
+    #     except Exception as e:
+    #         print("H",e)
+    #         return "error"
 
         
     def lsa(text,num_sent):
@@ -100,16 +89,18 @@ class SummarizerModel:
             top_sentence_indices = np.argsort(sentence_scores.flatten())[::-1][:num_sent]
             top_sentence_indices.sort()
             summary = ' '.join([sentences[i] for i in top_sentence_indices])
-            return summary
+            print(summary)
+           
+            return jsonify({"summary": summary}),200
+            title=SummarizerModel.title(summary)
+            # return jsonify({"summary": summary,"title":title}),200
         except Exception as e:
-            print(e)
+            print('l',e)
             return "error"
 
 
     def kl(text,n_sentences):
         print(n_sentences)
-        if n_sentences is None:
-            n_sentences = 5
         try:
             stop_words = set(stopwords.words('english'))
             words = [word.lower() for word in word_tokenize(text) if word.isalnum() and word.lower() not in stop_words]
@@ -139,8 +130,13 @@ class SummarizerModel:
                     if new_sentence_score > sentence_kl_div:
                         summary = summary.replace(summary.split()[-1], sentence, 1)
             summary = summary.strip()
-            return summary
+            print(summary)
+            return jsonify({"summary": summary}),200
+            # title=SummarizerModel.title(summary)
+            # return jsonify({"summary": summary,"title":title}),200
         except Exception as e:
-            print(e)
+            print('kl',e)
             return 'error'
+        
+ 
 
