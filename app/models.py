@@ -12,11 +12,12 @@ from sklearn.decomposition import TruncatedSVD
 from nltk.tokenize import sent_tokenize, word_tokenize
 from nltk.corpus import stopwords
 from collections import Counter
-import transformers
-import os
-from transformers import AutoModelForSeq2SeqLM, AutoTokenizer
-from transformers import GPT2LMHeadModel, GPT2Tokenizer
+import random
+import sys
 
+from keras.callbacks import LambdaCallback
+from keras.models import Sequential
+from keras.layers import Dense, LSTM
 
 
 API_URL = "https://api-inference.huggingface.co/models/Hridayesh7/autotrain-summasense-3584196302"
@@ -25,6 +26,45 @@ API_URL = "https://api-inference.huggingface.co/models/Hridayesh7/autotrain-summ
 
 class SummarizerModel:
 
+
+    def title_generator(text):
+        chars = sorted(list(set(text)))
+        char_indices = dict((c, i) for i, c in enumerate(chars))
+        indices_char = dict((i, c) for i, c in enumerate(chars))
+
+        # Cut the text into subsequences of a fixed length
+        maxlen = 40
+        step = 3
+        sentences = []
+        next_chars = []
+        for i in range(0, len(text) - maxlen, step):
+            sentences.append(text[i : i + maxlen])
+            next_chars.append(text[i + maxlen])
+            
+        # Vectorize the sentences and next_chars
+        x = np.zeros((len(sentences), maxlen, len(chars)), dtype=np.bool)
+        y = np.zeros((len(sentences), len(chars)), dtype=np.bool)
+        for i, sentence in enumerate(sentences):
+            for t, char in enumerate(sentence):
+                x[i, t, char_indices[char]] = 1
+            y[i, char_indices[next_chars[i]]] = 1
+        model = Sequential()
+        model.add(LSTM(128, input_shape=(maxlen, len(chars))))
+        model.add(Dense(len(chars), activation="softmax"))
+
+        # Compile the model
+        model.compile(loss="categorical_crossentropy", optimizer="adam")
+
+        # Define a function to sample a character from the model's output distribution
+        def sample(preds, temperature=1.0):
+            preds = np.asarray(preds).astype("float64")
+            preds = np.log(preds) / temperature
+            exp_preds = np.exp(preds)
+            preds = exp_preds / np.sum(exp_preds)
+            probas = np.random.multinomial(1, preds, 1)
+            return np.argmax(probas)
+
+        
     def gpt(text):
         try:
             openai.api_key = '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'

@@ -11,9 +11,9 @@ app.config['SESSION_USE_SIGNER'] = True
 app.config['SESSION_REDIS'] = redis.from_url('redis://127.0.0.1:6379')
 app.config['SECRET_KEY'] = config.Config.SECRET_KEY
 Session(app)
-conn_string = config.Config.DATABASE_URI
-mongoDB_client = pymongo.MongoClient(conn_string)
-db = mongoDB_client.get_database('summarizer')
+# conn_string = config.Config.DATABASE_URI
+# mongoDB_client = pymongo.MongoClient(conn_string)
+# db = mongoDB_client.get_database('summarizer')
 CORS(app)
 cors = CORS(app, resource={
     r"/*":{

@@ -56,10 +56,7 @@ def auth():
 def summary():
     text_obj = request.get_json()
     input_text = text_obj['text']
-    stop_words = text_obj['limit']
-    top = text_obj['top']
     num_sent = text_obj['num_sent']
-    print(top)
     try:
         processed_text = services.Service.listen(input_text)
         # gpt = models.SummarizerModel.gpt(input_text)
