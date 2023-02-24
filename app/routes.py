@@ -3,6 +3,7 @@ from app import app
 from app import controllers
 from app import services
 from app import models
+from flask_jwt_extended import create_access_token, get_jwt, get_jwt_identity,unset_jwt_cookies, jwt_required, JWTManager
 
 @app.route('/', methods=['GET', 'POST'])
 def listen():
@@ -44,6 +45,7 @@ def title():
         
         
 @app.route('/auth', methods=['GET', 'POST'])
+@jwt_required()
 def auth():
     try:
          return controllers.AudioController.auth()
