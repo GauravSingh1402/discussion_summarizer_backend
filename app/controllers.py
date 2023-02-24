@@ -3,7 +3,7 @@ from flask import jsonify, request, session, Response
 from app import db
 from datetime import datetime
 from flask_session import Session
-from flask_bcrypt import Bcrypt
+import bcrypt
 from flask_jwt_extended import create_access_token, get_jwt, get_jwt_identity,unset_jwt_cookies, jwt_required, JWTManager
 import hashlib
 
