@@ -18,10 +18,10 @@ def signup():
         print("Error")
         
 @app.route('/gsignup', methods=['GET', 'POST'])
-def signup():
+def gsignup():
     userData = request.get_json()
     try:
-         return controllers.AudioController.signup(userData)
+         return controllers.AudioController.gsignup(userData)
     except:
         print("Error")
         
@@ -36,10 +36,10 @@ def login():
         print("Error")
         
 @app.route('/glogin', methods=['GET', 'POST'])
-def login():
+def glogin():
     userData = request.get_json()
     try:
-         return controllers.AudioController.login(userData)
+         return controllers.AudioController.glogin(userData)
     except:
         print("Error")
         
