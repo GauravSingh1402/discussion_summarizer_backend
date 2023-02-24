@@ -100,7 +100,7 @@ class AudioController:
                 print(result['password'])
                 print(check_password_hash(result['password'], upassword))
                 if (result != None):
-                    if bcrypt.check_password_hash(result['password'], upassword):
+                    if bcrypt.checkpw(upassword.encode('utf-8'), result['password']):
                         access_token = create_access_token(identity=uemail)
                         resp = Response('login successfull', status=200)
                         resp.set_cookie('jwt', access_token,
