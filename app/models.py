@@ -53,7 +53,7 @@ class SummarizerModel:
                     if word in word_freq:
                         sentence_scores[i] += word_freq[word]
             # Get the top N sentences based on their scores
-            num_sentences = 2
+            num_sentences = 1
             top_sentences = nlargest(num_sentences, sentence_scores, key=sentence_scores.get)
             # Generate the summary or title from the top sentences
             title = ' '.join([sentences[i] for i in sorted(top_sentences)])
