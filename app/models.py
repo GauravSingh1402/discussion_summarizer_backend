@@ -20,11 +20,9 @@ class SummarizerModel:
         print('input',text)
         
         try:
-            summarizer = pipeline("summarization")
-            article_text = "Your news article text here"
-            title = summarizer(article_text, max_length=60, min_length=10, do_sample=False)[0]['summary_text']
-            print("Generated title:", title)
-            
+            title = summary_gen(text, max_length=20, min_length=5)
+            print('tit',title)
+            return title
         except Exception as e:
             print("H",e)
             return "error"
