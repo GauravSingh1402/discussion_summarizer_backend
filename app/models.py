@@ -19,8 +19,8 @@ API_URL = "https://api-inference.huggingface.co/models/Hridayesh7/autotrain-summ
 class SummarizerModel:
     def title(text):
         print('input',text)
-        summary_gen = pipeline("summarization")
         try:
+            summary_gen = pipeline("summarization")
             title = summary_gen(text, max_length=20, min_length=5)
             print('tit',title)
             return title
