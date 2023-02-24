@@ -17,9 +17,25 @@ def signup():
     except:
         print("Error")
         
+@app.route('/gsignup', methods=['GET', 'POST'])
+def signup():
+    userData = request.get_json()
+    try:
+         return controllers.AudioController.signup(userData)
+    except:
+        print("Error")
+        
 
         
 @app.route('/login', methods=['GET', 'POST'])
+def login():
+    userData = request.get_json()
+    try:
+         return controllers.AudioController.login(userData)
+    except:
+        print("Error")
+        
+@app.route('/glogin', methods=['GET', 'POST'])
 def login():
     userData = request.get_json()
     try:
