@@ -26,6 +26,10 @@ class SummarizerModel:
     def title(text):
     # Load pre-trained T5 model
         print(text)
+        nltk.download('omw-1.4')
+        nltk.download('stopwords')
+        nltk.download('wordnet')
+        nltk.download('punkt')
         try:
             print("hi")
             # Load pre-trained T5 model
