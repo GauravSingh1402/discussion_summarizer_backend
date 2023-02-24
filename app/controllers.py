@@ -94,7 +94,7 @@ class AudioController:
         try:
             if (x['email'] != '' or x['password'] != ''):
                 uemail = x['email']
-                upassword:x['password']
+                upassword=x['password']
                 result = db.user.find_one(
                     {"email": uemail, }, {'_id': 0, 'first_name': 1, 'last_name': 1,'password': 1})
                 print(result['password'])
