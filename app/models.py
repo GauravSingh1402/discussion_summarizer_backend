@@ -5,8 +5,8 @@ import time
 import openai
 import numpy as np
 import nltk
-from transformers import pipeline
-
+from transformers import T5ForConditionalGeneration, T5Tokenizer
+import torch
 from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
 from sklearn.feature_extraction.text import TfidfVectorizer
@@ -16,18 +16,37 @@ from collections import Counter
 API_URL = "https://api-inference.huggingface.co/models/Hridayesh7/autotrain-summasense-3584196302"
 
 
-
+model = T5ForConditionalGeneration.from_pretrained('t5-small')
 class SummarizerModel:
+    
     def title(text):
-        print('input',text)
-        summary_gen = pipeline("summarization", model="sshleifer/distilbart-cnn-12-6", revision="a4f8f3e")
-        print(summary_gen)
+    # Load pre-trained T5 model
+        print(text)
         try:
-            title = summary_gen(text, max_length=20, min_length=5)
-            print('tit',title)
+            # Load pre-trained T5 model
+            model = T5ForConditionalGeneration.from_pretrained('t5-small')
+
+            # Load T5 tokenizer
+            tokenizer = T5Tokenizer.from_pretrained('t5-small')
+
+            # Tokenize input text
+            inputs = tokenizer.encode(text, return_tensors='pt')
+
+            # Generate title
+            output = model.generate(inputs,
+                                    max_length=20,
+                                    min_length=5,
+                                    length_penalty=2.0,
+                                    num_beams=4,
+                                    early_stopping=True)
+
+            # Decode generated title
+            title = tokenizer.decode(output[0], skip_special_tokens=True)
+
+            print(title)
             return title
         except Exception as e:
-            print("H",e)
+            print(e)
             return "error"
         
     def t5_summarizer(text,stop_words,top):
