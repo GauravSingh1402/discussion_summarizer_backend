@@ -21,7 +21,7 @@ class AudioController:
                 last_name = x['last_name']
                 password=x['password']
                 print(email, first_name, last_name,password)
-                hashed_password = hashlib.sha256(password.encode()).hexdigest()
+                hashed_password=bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
                 print(hashed_password)
                 print(hashed_password, first_name, last_name)
                 result = db.user.find_one(
