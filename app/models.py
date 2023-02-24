@@ -16,12 +16,13 @@ from collections import Counter
 API_URL = "https://api-inference.huggingface.co/models/Hridayesh7/autotrain-summasense-3584196302"
 
 
-model = T5ForConditionalGeneration.from_pretrained('t5-small')
+
 class SummarizerModel:
     
     def title(text):
     # Load pre-trained T5 model
         print(text)
+        model = T5ForConditionalGeneration.from_pretrained('t5-small')
         try:
             # Load pre-trained T5 model
             model = T5ForConditionalGeneration.from_pretrained('t5-small')
