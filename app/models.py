@@ -5,6 +5,10 @@ import time
 import openai
 import numpy as np
 import nltk
+from nltk.tokenize import sent_tokenize, word_tokenize
+from string import punctuation
+from collections import defaultdict
+from heapq import nlargest
 from transformers import T5ForConditionalGeneration, T5Tokenizer
 import torch
 from nltk.corpus import stopwords
@@ -22,29 +26,33 @@ class SummarizerModel:
     def title(text):
     # Load pre-trained T5 model
         print(text)
-        model = T5ForConditionalGeneration.from_pretrained('t5-small')
         try:
             print("hi")
             # Load pre-trained T5 model
-            model = T5ForConditionalGeneration.from_pretrained('t5-small')
-
-            # Load T5 tokenizer
-            tokenizer = T5Tokenizer.from_pretrained('t5-small')
-
-            # Tokenize input text
-            inputs = tokenizer.encode(text, return_tensors='pt')
-
-            # Generate title
-            output = model.generate(inputs,
-                                    max_length=20,
-                                    min_length=5,
-                                    length_penalty=2.0,
-                                    num_beams=4,
-                                    early_stopping=True)
-
-            # Decode generated title
-            title = tokenizer.decode(output[0], skip_special_tokens=True)
-
+            sentences = sent_tokenize(text)
+            words = word_tokenize(text.lower())
+            # Remove stopwords and punctuation
+            stopwords = set(stopwords.words('english') + list(punctuation))
+            filtered_words = [word for word in words if word not in stopwords]
+            # Build a dictionary of word frequencies
+            word_freq = defaultdict(int)
+            for word in filtered_words:
+                word_freq[word] += 1
+            # Normalize the word frequencies
+            max_freq = max(word_freq.values())
+            for word in word_freq:
+                word_freq[word] = word_freq[word]/max_freq
+            # Build a dictionary of sentence scores based on word frequencies
+            sentence_scores = defaultdict(int)
+            for i, sentence in enumerate(sentences):
+                for word in word_tokenize(sentence.lower()):
+                    if word in word_freq:
+                        sentence_scores[i] += word_freq[word]
+            # Get the top N sentences based on their scores
+            num_sentences = 2
+            top_sentences = nlargest(num_sentences, sentence_scores, key=sentence_scores.get)
+            # Generate the summary or title from the top sentences
+            title = ' '.join([sentences[i] for i in sorted(top_sentences)])
             print(title)
             return title
         except Exception as e:
