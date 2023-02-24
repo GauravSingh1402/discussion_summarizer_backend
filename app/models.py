@@ -6,7 +6,6 @@ import openai
 import numpy as np
 import nltk
 from transformers import pipeline
-import jwt
 from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
 from sklearn.feature_extraction.text import TfidfVectorizer
@@ -15,16 +14,17 @@ from nltk.tokenize import sent_tokenize, word_tokenize
 from collections import Counter
 API_URL = "https://api-inference.huggingface.co/models/Hridayesh7/autotrain-summasense-3584196302"
 
-summary_gen = pipeline("summarization", model="sshleifer/distilbart-cnn-12-6")
 
 class SummarizerModel:
     def title(text):
         print('input',text)
         
         try:
-            title = summary_gen(text, max_length=20, min_length=5)
-            print('tit',title)
-            return title
+            summarizer = pipeline("summarization")
+            article_text = "Your news article text here"
+            title = summarizer(article_text, max_length=60, min_length=10, do_sample=False)[0]['summary_text']
+            print("Generated title:", title)
+            
         except Exception as e:
             print("H",e)
             return "error"

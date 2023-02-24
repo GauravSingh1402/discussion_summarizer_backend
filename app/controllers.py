@@ -93,7 +93,7 @@ class AudioController:
             if (x['email'] != ''):
                 email = x['email']
                 result = db.user.find_one(
-                    {"email": email, }, {'_id': 0, 'first_name': 1, 'last_name': 1})
+                    {"email": email, }, {'_id': 0, 'first_name': 1, 'last_name': 1,'password': 1})
                 print(result)
                 if (result != None):
                     access_token = create_access_token(identity=email)
