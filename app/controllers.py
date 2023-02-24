@@ -4,6 +4,7 @@ from app import db
 from datetime import datetime
 from flask_session import Session
 import bcrypt
+from flask_bcrypt import check_password_hash
 from flask_jwt_extended import create_access_token, get_jwt, get_jwt_identity,unset_jwt_cookies, jwt_required, JWTManager
 import hashlib
 
@@ -97,7 +98,7 @@ class AudioController:
                 result = db.user.find_one(
                     {"email": uemail, }, {'_id': 0, 'first_name': 1, 'last_name': 1,'password': 1})
                 print(result['password'])
-                print(bcrypt.check_password_hash(result['password'], upassword))
+                print(check_password_hash(result['password'], upassword))
                 if (result != None):
                     if bcrypt.check_password_hash(result['password'], upassword):
                         access_token = create_access_token(identity=uemail)
