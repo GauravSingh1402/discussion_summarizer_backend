@@ -36,8 +36,8 @@ class SummarizerModel:
             sentences = sent_tokenize(text)
             words = word_tokenize(text.lower())
             # Remove stopwords and punctuation
-            stopwords = set(stopwords.words('english') + list(punctuation))
-            filtered_words = [word for word in words if word not in stopwords]
+            stepwords = set(stopwords.words('english') + list(punctuation))
+            filtered_words = [word for word in words if word not in stepwords]
             # Build a dictionary of word frequencies
             word_freq = defaultdict(int)
             for word in filtered_words:
