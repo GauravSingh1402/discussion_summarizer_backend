@@ -11,8 +11,9 @@ app=Flask(__name__)
 # app.config["SESSION_TYPE"] = "redis"
 # app.config['SESSION_USE_SIGNER'] = True
 # app.config['SESSION_REDIS'] = redis.from_url('redis://127.0.0.1:6379')
-# app.config['SECRET_KEY'] = config.Config.SECRET_KEY
-app.config['JWT_SECRET'] = config.Config.JWT_SECRET
+app.config['SECRET_KEY'] = config.Config.SECRET_KEY
+app.config['JWT_SECRET_KEY'] = config.Config.JWT_SECRET_KEY
+app.config['JWT_ALGORITHM'] = config.Config.JWT_ALGORITHM
 jwt = JWTManager(app)
 Session(app)
 conn_string = config.Config.DATABASE_URI
