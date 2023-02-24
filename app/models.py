@@ -24,6 +24,7 @@ class SummarizerModel:
         print(text)
         model = T5ForConditionalGeneration.from_pretrained('t5-small')
         try:
+            print("hi")
             # Load pre-trained T5 model
             model = T5ForConditionalGeneration.from_pretrained('t5-small')
 
