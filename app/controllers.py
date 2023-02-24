@@ -96,10 +96,10 @@ class AudioController:
                 upassword:x['password']
                 result = db.user.find_one(
                     {"email": uemail, }, {'_id': 0, 'first_name': 1, 'last_name': 1,'password': 1})
-                print(result['email'])
+                print(result['password'])
                 print(bcrypt.check_password_hash(result['password'], upassword))
                 if (result != None):
-                    if uemail == result['email'] and bcrypt.check_password_hash(result['password'], upassword):
+                    if bcrypt.check_password_hash(result['password'], upassword):
                         access_token = create_access_token(identity=uemail)
                         resp = Response('login successfull', status=200)
                         resp.set_cookie('jwt', access_token,
