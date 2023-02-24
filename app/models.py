@@ -15,11 +15,12 @@ from nltk.tokenize import sent_tokenize, word_tokenize
 from collections import Counter
 API_URL = "https://api-inference.huggingface.co/models/Hridayesh7/autotrain-summasense-3584196302"
 
-summary_gen = pipeline("summarization", model="sshleifer/distilbart-cnn-12-6", revision="a4f8f3e")
+
 
 class SummarizerModel:
     def title(text):
         print('input',text)
+        summary_gen = pipeline("summarization", model="sshleifer/distilbart-cnn-12-6", revision="a4f8f3e")
         try:
             title = summary_gen(text, max_length=20, min_length=5)
             print('tit',title)
@@ -48,8 +49,8 @@ class SummarizerModel:
             response = requests.post(API_URL, headers=headers, json=data)
             print("Yup",response.json())
             summary = response.json()[0]['summary_text']
-            title=SummarizerModel.title(summary)
-            return jsonify({"summary": summary,"title":title}),200
+            # title=SummarizerModel.title(summary)
+            return jsonify({"summary": summary}),200
         except Exception as e:
             print("K",e)
             return "error"
@@ -91,8 +92,8 @@ class SummarizerModel:
             top_sentence_indices.sort()
             summary = ' '.join([sentences[i] for i in top_sentence_indices])
             print(summary)
-            title=SummarizerModel.title(summary)
-            return summary,title
+            # title=SummarizerModel.title(summary)
+            return summary
             # return jsonify({"summary": summary,"title":title}),200
         except Exception as e:
             print('l',e)
@@ -133,7 +134,7 @@ class SummarizerModel:
             print(summary)
             return summary
             # title=SummarizerModel.title(summary)
-            # return jsonify({"summary": summary,"title":title}),200
+            return jsonify({"summary": summary}),200
         except Exception as e:
             print('kl',e)
             return 'error'
