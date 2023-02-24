@@ -30,6 +30,7 @@ def gsignup():
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     userData = request.get_json()
+    print("User Data",userData)
     try:
          return controllers.AudioController.login(userData)
     except:

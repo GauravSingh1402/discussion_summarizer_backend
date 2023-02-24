@@ -3,6 +3,7 @@ from flask import jsonify, request, session, Response
 from app import db
 from datetime import datetime
 from flask_session import Session
+from flask_bcrypt import Bcrypt
 from flask_jwt_extended import create_access_token, get_jwt, get_jwt_identity,unset_jwt_cookies, jwt_required, JWTManager
 import hashlib
 
@@ -90,18 +91,20 @@ class AudioController:
         
     def login(x):
         try:
-            if (x['email'] != ''):
-                email = x['email']
+            if (x['email'] != '' or x['password'] != ''):
+                uemail = x['email']
+                upassword:x['password']
                 result = db.user.find_one(
-                    {"email": email, }, {'_id': 0, 'first_name': 1, 'last_name': 1,'password': 1})
+                    {"email": uemail, }, {'_id': 0, 'first_name': 1, 'last_name': 1,'password': 1})
                 print(result)
                 if (result != None):
-                    access_token = create_access_token(identity=email)
-                    resp = Response('login successfull', status=200)
-                    resp.set_cookie('jwt', access_token,
-                                    httponly=True, secure=True)
-                    print(access_token)
-                    return resp
+                    if uemail == 'user@example.com' and bcrypt.check_password_hash('$2b$12$Dw2QqVy3F8KmWd1vveR1JOpfZ9X8H/CmgjREkuLhPzyGtNcJY95Y6', upassword):
+                        access_token = create_access_token(identity=uemail)
+                        resp = Response('login successfull', status=200)
+                        resp.set_cookie('jwt', access_token,
+                                        httponly=True, secure=True)
+                        print(access_token)
+                        return resp
                 else:
                     return "user doesnt exsist"
             else:

@@ -1,7 +1,7 @@
 import os
 class Config(object):
-    DEBUG = False
-    TESTING = False
+    DEBUG = True
+    TESTING = True
     CSRF_ENABLED = True
     DATABASE_URI = os.environ.get("DATABASE_URL")
     SECRET_KEY = os.environ.get("SECRET_KEY")

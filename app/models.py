@@ -6,6 +6,7 @@ import openai
 import numpy as np
 import nltk
 from transformers import pipeline
+
 from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
 from sklearn.feature_extraction.text import TfidfVectorizer
@@ -15,13 +16,12 @@ from collections import Counter
 API_URL = "https://api-inference.huggingface.co/models/Hridayesh7/autotrain-summasense-3584196302"
 
 
+
 class SummarizerModel:
     def title(text):
         print('input',text)
-        
         try:
-            summary_gen = pipeline("summarization", model="sshleifer/distilbart-cnn-12-6")
-            print(summary_gen)
+            summary_gen = pipeline("summarization")
             title = summary_gen(text, max_length=20, min_length=5)
             print('tit',title)
             return title
