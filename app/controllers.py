@@ -98,7 +98,6 @@ class AudioController:
                 result = db.user.find_one(
                     {"email": uemail, }, {'_id': 0, 'first_name': 1, 'last_name': 1,'password': 1})
                 print(result['password'])
-                print(check_password_hash(result['password'], upassword))
                 if (result != None):
                     if bcrypt.checkpw(upassword.encode('utf-8'), result['password']):
                         access_token = create_access_token(identity=uemail)
