@@ -20,6 +20,7 @@ class SummarizerModel:
         print('input',text)
         
         try:
+            summary_gen = pipeline("summarization", model="sshleifer/distilbart-cnn-12-6")
             title = summary_gen(text, max_length=20, min_length=5)
             print('tit',title)
             return title
