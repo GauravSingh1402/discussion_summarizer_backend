@@ -34,6 +34,7 @@ def logout():
     except:
         print("Error")
         
+        
 @app.route('/title', methods=['GET', 'POST'])
 def title():
     sum = request.get_json()
