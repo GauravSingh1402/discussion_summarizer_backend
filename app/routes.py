@@ -29,6 +29,7 @@ def gsignup():
         
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    print(request.get_json())
     userData = request.get_json()
     print("User Data",userData)
     try:
