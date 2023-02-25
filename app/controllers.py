@@ -34,11 +34,11 @@ class AudioController:
                         "password": hashed_password,
                         "created_date": datetime.utcnow()
                     })
-                    return "Inserted"
+                    return jsonify({"data" : "Inserted"}),200
                 else:
-                    return "User Already Exists"
+                     return jsonify({"data" : "User Already Exists"})
             else:
-                return "Fill All The Details"
+                 return jsonify({"data" : "Fill all details"})
         except Exception as e:
             print(e)
             return "error"
@@ -59,11 +59,9 @@ class AudioController:
                         "last_name": last_name,
                         "created_date": datetime.utcnow()
                     })
-                    return "Inserted"
+                    return jsonify({"data" : "Inserted"}),200
                 else:
-                    return "User Already Exists"
-            else:
-                return "Fill All The Details"
+                     return jsonify({"data" : "User Already Exists"})
         except Exception as e:
             print(e)
             return "error"
@@ -83,9 +81,9 @@ class AudioController:
                     print(access_token)
                     return resp
                 else:
-                    return "user doesnt exsist"
+                     return jsonify({"data" : "User doesnt exsist"})
             else:
-                return 'Sign up first'
+                 return jsonify({"data" : "Sign up first"})
         except Exception as e:
             print(e)
             return "error"
@@ -107,11 +105,11 @@ class AudioController:
                         print(access_token)
                         return resp
                     else:
-                        return "incorrect login credentials"
+                         return jsonify({"data": "incorrect credentials"})
                 else:
-                    return "user doesnt exsist"
+                     return jsonify({"data": "User doesnt exsist"})
             else:
-                return 'Sign up first'
+                 return jsonify({"data" : "Fill all details"})
         except Exception as e:
             print(e)
             return "error"
