@@ -20,6 +20,6 @@ Session(app)
 conn_string = config.Config.DATABASE_URI
 mongoDB_client = pymongo.MongoClient(conn_string)
 db = mongoDB_client.get_database('summarizer')
-CORS(app, resources={r'/*': {'origins': '*', 'supports_credentials': True}}, supports_credentials=True)
+CORS(app, resources={r'/*': {'origins': '*'}})
 app.config['CORS_SUPPORTS_CREDENTIALS'] = True
 from app import routes
