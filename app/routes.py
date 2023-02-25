@@ -63,10 +63,19 @@ def title():
         
         
 @app.route('/auth', methods=['GET', 'POST'])
-@jwt_required()
 def auth():
     try:
          return controllers.AudioController.auth()
+    except:
+        print("Error")
+        
+@app.route('/video', methods=['GET', 'POST'])
+def video():
+    print(request)
+    vid = request.files['file']
+    try:
+        print("hi")
+        return models.SummarizerModel.video(vid)
     except:
         print("Error")
         

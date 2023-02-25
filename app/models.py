@@ -16,6 +16,8 @@ from nltk.stem import WordNetLemmatizer
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.decomposition import TruncatedSVD
 from nltk.tokenize import sent_tokenize, word_tokenize
+import cv2
+import pytesseract
 from collections import Counter
 API_URL = "https://api-inference.huggingface.co/models/Hridayesh7/autotrain-summasense-3584196302"
 
@@ -172,6 +174,27 @@ class SummarizerModel:
         except Exception as e:
             print('kl',e)
             return 'error'
+        
+    def video(vid):
+        try:
+            video = cv2.VideoCapture(vid)
+            success, image = video.read()
+            count = 0
+            while success:
+                cv2.imwrite(f"frame{count}.jpg", image)
+                success, image = video.read()
+                count += 1
+            for i in range(count):
+                image = cv2.imread(f"frame{i}.jpg")
+                text = pytesseract.image_to_string(image)
+                print(text)
+                return text
+        except Exception as e:
+            print(e)
+            return "error"
+
+
+
         
  
 
