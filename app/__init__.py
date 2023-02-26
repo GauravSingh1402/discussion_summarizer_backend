@@ -25,9 +25,11 @@ CORS(app, resources={
     r'/*': {
         'origins': ['http://localhost:3000', 'https://summa-sense.vercel.app'],
         'allow_headers': ['Content-Type', 'Authorization'],
-        'methods': ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS']
+        'methods': ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+        'supports_credentials': True
     }
 }, send_wildcard=False)
+
 
 
 
