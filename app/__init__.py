@@ -38,4 +38,5 @@ def after_request(response):
     response.headers.add('Access-Control-Allow-Credentials', 'true')
     return response
 
+
 from app import routes
