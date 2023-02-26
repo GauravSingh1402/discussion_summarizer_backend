@@ -101,7 +101,7 @@ class AudioController:
                         access_token = create_access_token(identity=uemail)
                         resp = Response('login successfull', status=200)
                         resp.set_cookie('jwt', access_token,
-                                        httponly=True, secure=True)
+                                        httponly=True, secure=True,samesite=None)
                         print(access_token)
                         return resp
                     else:
