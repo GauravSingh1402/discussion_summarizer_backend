@@ -24,7 +24,6 @@ db = mongoDB_client.get_database('summarizer')
 CORS(app, resources={
     r'/*': {
         'origins': ['http://localhost:3000', 'https://summa-sense.vercel.app'],
-        'supports_credentials': True,
         'allow_headers': ['Content-Type', 'Authorization'],
         'methods': ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS']
     }
