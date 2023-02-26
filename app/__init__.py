@@ -7,19 +7,23 @@ from flask_jwt_extended import create_access_token,get_jwt,get_jwt_identity, \
 from flask_bcrypt import Bcrypt
 import redis
 from app import config
+
 app=Flask(__name__)
 bcrypt = Bcrypt(app)
-# app.config["SESSION_PERMANENT"] = False
-# app.config["SESSION_TYPE"] = "redis"
-# app.config['SESSION_USE_SIGNER'] = True
-# app.config['SESSION_REDIS'] = redis.from_url('redis://127.0.0.1:6379')
+
 app.config['SECRET_KEY'] = config.Config.SECRET_KEY
 app.config['JWT_SECRET_KEY'] = config.Config.JWT_SECRET_KEY
+
 jwt = JWTManager(app)
 Session(app)
+
 conn_string = config.Config.DATABASE_URI
 mongoDB_client = pymongo.MongoClient(conn_string)
 db = mongoDB_client.get_database('summarizer')
-CORS(app, resources={r'/*': {'origins': ['http://localhost:3000', 'https://summa-sense.vercel.app'], 'supports_credentials': True}}, supports_credentials=True)
-app.config['CORS_ALLOWED_HEADERS'] = ['Content-Type']
+
+CORS(app, resources={r'/*': {'origins': ['http://localhost:3000', 'https://summa-sense.vercel.app'],
+                             'supports_credentials': True,
+                             'allow_headers': ['Content-Type', 'Authorization'],
+                             'methods': ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS']}})
+
 from app import routes
