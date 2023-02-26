@@ -20,15 +20,15 @@ Session(app)
 conn_string = config.Config.DATABASE_URI
 mongoDB_client = pymongo.MongoClient(conn_string)
 db = mongoDB_client.get_database('summarizer')
-
 CORS(app, resources={
     r'/*': {
         'origins': ['http://localhost:3000', 'https://summa-sense.vercel.app'],
         'allow_headers': ['Content-Type', 'Authorization'],
         'methods': ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-        'supports_credentials': True
+        'allow_credentials': True  # set this option to include the header with 'true' value
     }
 }, send_wildcard=False)
+
 
 
 
