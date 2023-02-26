@@ -20,10 +20,7 @@ class AudioController:
                 first_name = x['first_name']
                 last_name = x['last_name']
                 password=x['password']
-                print(email, first_name, last_name,password)
                 hashed_password=bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
-                print(hashed_password)
-                print(hashed_password, first_name, last_name)
                 result = db.user.find_one(
                     {"email": email, }, {'_id': 0, 'first_name': 1, 'last_name': 1})
                 if not result:
@@ -72,13 +69,11 @@ class AudioController:
                 email = x['email']
                 result = db.user.find_one(
                     {"email": email, }, {'_id': 0, 'first_name': 1, 'last_name': 1})
-                print(result)
                 if (result != None):
                     access_token = create_access_token(identity=email)
                     resp = Response('login successfull', status=200)
                     resp.set_cookie('jwt', access_token,
                                     httponly=True, secure=True,samesite='None')
-                    print(access_token)
                     return resp
                 else:
                      return jsonify({"data" : "User doesnt exsist"})
@@ -95,14 +90,12 @@ class AudioController:
                 upassword=x['password']
                 result = db.user.find_one(
                     {"email": uemail, }, {'_id': 0, 'first_name': 1, 'last_name': 1,'password': 1})
-                print(result['password'])
                 if (result != None):
                     if bcrypt.checkpw(upassword.encode('utf-8'), result['password']):
                         access_token = create_access_token(identity=uemail)
                         resp = Response('login successfull', status=200)
                         resp.set_cookie('jwt', access_token,
                                         httponly=True, secure=True,samesite="None")
-                        print(access_token)
                         return resp
                     else:
                          return jsonify({"data": "incorrect credentials"})
@@ -116,9 +109,7 @@ class AudioController:
         
     def auth():
         try:
-            print(request.cookies)
             user_id = request.cookies.get('jwt')
-            print('user_id', user_id)
             if not user_id:
                 return jsonify({"error": "Unauthorized"}), 401
             else:
