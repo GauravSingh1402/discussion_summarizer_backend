@@ -21,10 +21,21 @@ conn_string = config.Config.DATABASE_URI
 mongoDB_client = pymongo.MongoClient(conn_string)
 db = mongoDB_client.get_database('summarizer')
 
-CORS(app, resources={r'/*': {'origins': ['http://localhost:3000', 'https://summa-sense.vercel.app'], 'supports_credentials': True, 'allow_headers': ['Content-Type', 'Authorization'], 'methods': ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS']}},
-     allow_credentials=True, 
-     send_wildcard=False) # Set send_wildcard to False to explicitly set Access-Control-Allow-Credentials header to true
+CORS(app, resources={
+    r'/*': {
+        'origins': ['http://localhost:3000', 'https://summa-sense.vercel.app'],
+        'supports_credentials': True,
+        'allow_headers': ['Content-Type', 'Authorization'],
+        'methods': ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS']
+    }
+}, send_wildcard=False)
 
-
+@app.after_request
+def after_request(response):
+    response.headers.add('Access-Control-Allow-Origin', 'http://localhost:3000')
+    response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+    response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
+    response.headers.add('Access-Control-Allow-Credentials', 'true')
+    return response
 
 from app import routes
