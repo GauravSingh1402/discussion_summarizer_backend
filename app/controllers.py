@@ -139,6 +139,7 @@ class AudioController:
             print(u_mail)
             mail=u_mail
             summary=summ
+            print(summary)
             if mail != '' or mail != None:
                 result = db.user.find_one(
                         {"email": mail, }, {'_id': 0, 'first_name': 1, 'last_name': 1,'password': 1})
