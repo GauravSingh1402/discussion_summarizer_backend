@@ -6,7 +6,7 @@ from flask_session import Session
 import bcrypt
 import os
 from flask_bcrypt import check_password_hash
-from flask_jwt_extended import create_access_token, get_jwt, get_jwt_identity,unset_jwt_cookies, jwt_required, JWTManager
+from flask_jwt_extended import decode_token,create_access_token, get_jwt, get_jwt_identity,unset_jwt_cookies, jwt_required, JWTManager
 import hashlib
 
 
@@ -117,8 +117,8 @@ class AudioController:
             if not user_id:
                 return jsonify({"error": "Unauthorized"}), 401
             else:
-                jwt_payload = jwt.decode(user_id, os.environ.get('JWT_SECRET'), algorithms=['HS256'])
-                user_id = jwt_payload['user_id']
+                jwt_payload = decode_token(user_id)
+                user_id = jwt_payload['sub']
                 return jsonify({"user_id": user_id}), 200
         except Exception as e:
             print(e)
