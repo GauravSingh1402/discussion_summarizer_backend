@@ -142,9 +142,12 @@ class AudioController:
             result = db.user.find_one(
                     {"email": mail, }, {'_id': 0, 'first_name': 1, 'last_name': 1,'password': 1})
             if (result != None):
-                collection = db['mycollection']
-                collection.update_one({'_id': 1}, {'$push': {'discussion': summary}})
-                return jsonify({"data" : "Inserted"}),200
+                try:
+                    db.user.update_one({'_id': 1}, {'$push': {'discussion': summary}})
+                    return jsonify({"data" : "Updated"}),200
+                except Exception as e:
+                    print(e)
+                    return "error"
             else:
                 return jsonify({"data": "User doesnt exsist"})
         except Exception as e:
