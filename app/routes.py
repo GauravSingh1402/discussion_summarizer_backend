@@ -70,6 +70,17 @@ def auth():
     except:
         print("Error")
         
+        
+@app.route('/save_summary', methods=['GET', 'POST'])
+def save_summary():
+    try:
+        mail = request.get_json()
+        u_mail=mail['text']
+        summ=mail['sum']
+        return controllers.AudioController.save_summary(u_mail,summ)
+    except:
+        print("Error")
+        
 @app.route('/video', methods=['GET', 'POST'])
 def video():
     print(request)

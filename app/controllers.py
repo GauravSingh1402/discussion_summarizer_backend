@@ -29,6 +29,7 @@ class AudioController:
                         "first_name": first_name,
                         "last_name": last_name,
                         "password": hashed_password,
+                        "summary":[],
                         "created_date": datetime.utcnow()
                     })
                     return jsonify({"data" : "Inserted"}),200
@@ -54,6 +55,7 @@ class AudioController:
                         "email": email,
                         "first_name": first_name,
                         "last_name": last_name,
+                        "summary":[],
                         "created_date": datetime.utcnow()
                     })
                     return jsonify({"data" : "Inserted"}),200
@@ -126,3 +128,21 @@ class AudioController:
         except Exception as e:
             print(e)
             return "error"
+        
+    def save_summary(u_mail,summ):
+        try:
+            print(u_mail)
+            mail=u_mail
+            summary=summ
+            result = db.user.find_one(
+                    {"email": mail, }, {'_id': 0, 'first_name': 1, 'last_name': 1,'password': 1})
+            if (result != None):
+                collection = db['mycollection']
+                collection.update_one({'_id': 1}, {'$push': {'discussion': summary}})
+                return jsonify({"data" : "Inserted"}),200
+            else:
+                return jsonify({"data": "User doesnt exsist"})
+        except Exception as e:
+            print(e)
+            return "error"
+            
