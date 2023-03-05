@@ -74,7 +74,7 @@ def auth():
 @app.route('/save_summary', methods=['GET', 'POST'])
 def save_summary():
     mail = request.get_json()
-    u_mail=mail['text']
+    u_mail=mail['email']
     summ=mail['sum']
     try:
         return controllers.AudioController.save_summary(u_mail,summ)
