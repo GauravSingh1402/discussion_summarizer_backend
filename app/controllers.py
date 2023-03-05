@@ -113,11 +113,12 @@ class AudioController:
     def auth():
         try:
             user_id = request.cookies.get('jwt')
-            
+            print(user_id)
             if not user_id:
                 return jsonify({"error": "Unauthorized"}), 401
             else:
                 jwt_payload = decode_token(user_id)
+                print(jwt_payload)
                 user_id = jwt_payload['sub']
                 return jsonify({"user_id": user_id}), 200
         except Exception as e:
