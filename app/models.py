@@ -128,7 +128,7 @@ class SummarizerModel:
             top_sentence_indices.sort()
             summary = ' '.join([sentences[i] for i in top_sentence_indices])
             print(summary)
-            return jsonify({"summary": summary}),200
+            return summary
         except Exception as e:
             print('l',e)
             return "error"
@@ -165,7 +165,7 @@ class SummarizerModel:
                     if new_sentence_score > sentence_kl_div:
                         summary = summary.replace(summary.split()[-1], sentence, 1)
             summary = summary.strip()
-            return jsonify({"summary": summary}),200
+            return summary
         except Exception as e:
             print('kl',e)
             return 'error'
