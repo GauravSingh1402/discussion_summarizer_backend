@@ -107,6 +107,7 @@ def summary():
         summary = {
             'lsa': lsa,
             'kl':kl,
+            
         }
         return jsonify({"summary": summary}),200
     except Exception as e:

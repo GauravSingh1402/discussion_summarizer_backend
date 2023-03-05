@@ -4,6 +4,7 @@ import requests
 import time
 import openai
 import numpy as np
+import json
 import nltk
 from nltk.tokenize import sent_tokenize, word_tokenize
 from string import punctuation
@@ -129,7 +130,7 @@ class SummarizerModel:
             summary = ' '.join([sentences[i] for i in top_sentence_indices])
             print(summary)
             title=SummarizerModel.title(summary)
-            return jsonify({"summary": summary,"title":title}),200
+            return json.dump({"summary": summary,"title":title}),200
         except Exception as e:
             print('l',e)
             return "error"
@@ -168,7 +169,7 @@ class SummarizerModel:
             summary = summary.strip()
             print(summary)
             title=SummarizerModel.title(summary)
-            return jsonify({"summary": summary,"title":title}),200
+            return json.dump({"summary": summary,"title":title}),200
         except Exception as e:
             print('kl',e)
             return 'error'
