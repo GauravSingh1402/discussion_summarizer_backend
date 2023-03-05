@@ -2,8 +2,7 @@ from flask_cors import CORS
 from flask_pymongo import pymongo
 from flask import Flask, render_template, redirect, request, session
 from flask_session import Session
-from flask_jwt_extended import create_access_token,get_jwt,get_jwt_identity, \
-                               unset_jwt_cookies, jwt_required, JWTManager
+from flask_jwt_extended import create_access_token,get_jwt,get_jwt_identity,  unset_jwt_cookies, jwt_required, JWTManager
 from flask_bcrypt import Bcrypt
 import redis
 from app import config
@@ -22,7 +21,7 @@ mongoDB_client = pymongo.MongoClient(conn_string)
 db = mongoDB_client.get_database('summarizer')
 CORS(app, resources={
     r'/*': {
-        'origins': ['https://summa-sense.vercel.app'],
+        'origins': ['https://summa-sense.vercel.app','http://localhost:3000'],
         'allow_headers': ['Content-Type', 'Authorization'],
         'methods': ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
         'supports_credentials': True,
