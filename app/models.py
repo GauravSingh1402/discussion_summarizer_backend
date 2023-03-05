@@ -85,8 +85,8 @@ class SummarizerModel:
             response = requests.post(API_URL, headers=headers, json=data)
             print("Yup",response.json())
             summary = response.json()[0]['summary_text']
-            # title=SummarizerModel.title(summary)
-            return jsonify({"summary": summary}),200
+            title=SummarizerModel.title(summary)
+            return jsonify({"summary": summary,"title":title}),200
         except Exception as e:
             print("K",e)
             return "error"
@@ -128,9 +128,8 @@ class SummarizerModel:
             top_sentence_indices.sort()
             summary = ' '.join([sentences[i] for i in top_sentence_indices])
             print(summary)
-            # title=SummarizerModel.title(summary)
-            return summary
-            # return jsonify({"summary": summary,"title":title}),200
+            title=SummarizerModel.title(summary)
+            return jsonify({"summary": summary,"title":title}),200
         except Exception as e:
             print('l',e)
             return "error"
