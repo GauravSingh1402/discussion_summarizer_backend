@@ -143,7 +143,8 @@ class AudioController:
                     {"email": mail, }, {'_id': 0, 'first_name': 1, 'last_name': 1,'password': 1})
             if (result != None):
                 try:
-                    db.user.update_one({'_id': 1}, {'$push': {'discussion': summary}})
+                    user=db.user.update_one({'_id': 1}, {'$push': {'discussion': summary}})
+                    print(user)
                     return jsonify({"data" : "Updated"}),200
                 except Exception as e:
                     print(e)
