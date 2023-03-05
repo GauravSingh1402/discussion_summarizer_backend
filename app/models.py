@@ -87,7 +87,7 @@ class SummarizerModel:
             print("Yup",response.json())
             summary = response.json()[0]['summary_text']
             title=SummarizerModel.title(summary)
-            return json.dumps({"summary": summary,"title":title}),200
+            return jsonify({"summary": summary}),200
         except Exception as e:
             print("K",e)
             return "error"
@@ -130,7 +130,7 @@ class SummarizerModel:
             summary = ' '.join([sentences[i] for i in top_sentence_indices])
             print(summary)
             title=SummarizerModel.title(summary)
-            return json.dumps({"summary": summary,"title":title}),200
+            return json.dumps({"summary": summary}),200
         except Exception as e:
             print('l',e)
             return "error"
@@ -167,9 +167,7 @@ class SummarizerModel:
                     if new_sentence_score > sentence_kl_div:
                         summary = summary.replace(summary.split()[-1], sentence, 1)
             summary = summary.strip()
-            print(summary)
-            title=SummarizerModel.title(summary)
-            return json.dumps({"summary": summary,"title":title}),200
+            return jsonify({"summary": summary}),200
         except Exception as e:
             print('kl',e)
             return 'error'
