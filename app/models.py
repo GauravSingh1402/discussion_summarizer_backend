@@ -167,9 +167,8 @@ class SummarizerModel:
                         summary = summary.replace(summary.split()[-1], sentence, 1)
             summary = summary.strip()
             print(summary)
-            return summary
-            # title=SummarizerModel.title(summary)
-            return jsonify({"summary": summary}),200
+            title=SummarizerModel.title(summary)
+            return jsonify({"summary": summary,"title":title}),200
         except Exception as e:
             print('kl',e)
             return 'error'
