@@ -115,7 +115,7 @@ class AudioController:
             user_id = request.cookies.get('jwt')
             print(user_id)
             if not user_id:
-                return jsonify({"error": "Unauthorized"}), 401
+                return jsonify({"data": "Unauthorized"}), 401
             else:
                 jwt_payload = decode_token(user_id)
                 print(jwt_payload)
@@ -143,7 +143,7 @@ class AudioController:
                 if result is not None:
                     try:
                         db.user.update_one({'email': mail}, {'$push': {'summary': summary}})
-                        return jsonify({"data": "Updated"}), 200
+                        return jsonify({"data":"Updated"}), 200
                     except Exception as e:
                         print(e)
                         return "error"
