@@ -122,7 +122,8 @@ class AudioController:
                 user_id = jwt_payload['sub']
                 result = db.user.find_one(
                     {"email": user_id}, {'_id': 0, 'first_name': 1, 'last_name': 1})
-                return jsonify({"user_id": user_id,'first_name':result.first_name,'last_name':result.last_name}), 200
+                print(result)
+                return jsonify({"user_id": user_id}), 200
         except Exception as e:
             print(e)
             return "error"
