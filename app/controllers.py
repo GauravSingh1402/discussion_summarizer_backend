@@ -118,12 +118,11 @@ class AudioController:
                 return jsonify({"data": "Unauthorized"})
             else:
                 jwt_payload = decode_token(user_id)
-                print(jwt_payload)
                 user_id = jwt_payload['sub']
                 result = db.user.find_one(
                     {"email": user_id}, {'_id': 0, 'first_name': 1, 'last_name': 1})
                 print(result)
-                return jsonify({"user_id": user_id}), 200
+                return jsonify({"user_id": user_id,"other_info":result}), 200
         except Exception as e:
             print(e)
             return "error"
