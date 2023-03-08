@@ -4,6 +4,7 @@ from app import db
 from datetime import datetime
 from flask_session import Session
 import bcrypt
+import base64
 import os
 from flask_bcrypt import check_password_hash
 from flask_jwt_extended import decode_token,create_access_token, get_jwt, get_jwt_identity,unset_jwt_cookies, jwt_required, JWTManager
@@ -21,7 +22,9 @@ class AudioController:
                 first_name = x['first_name']
                 last_name = x['last_name']
                 password=x['password']
-                hashed_password=bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+                salt = bcrypt.gensalt()
+                hashed_password = bcrypt.hashpw(password.encode('utf-8'), salt)
+                hashed_password_str = base64.b64encode(hashed_password).decode('utf-8')
                 result = db.user.find_one(
                     {"email": email, }, {'_id': 0, 'first_name': 1, 'last_name': 1})
                 if not result:
@@ -29,7 +32,7 @@ class AudioController:
                         "email": email,
                         "first_name": first_name,
                         "last_name": last_name,
-                        "password": hashed_password,
+                        "password": hashed_password_str,
                         "summary":[],
                         "created_date": datetime.utcnow()
                     })
@@ -93,7 +96,8 @@ class AudioController:
                 result = db.user.find_one(
                     {"email": uemail, }, {'_id': 0, 'first_name': 1, 'last_name': 1,'password': 1})
                 if (result != None):
-                    if bcrypt.checkpw(upassword.encode('utf-8'), result['password']):
+                    hashed_password = base64.b64decode(result['password'])
+                    if bcrypt.checkpw(upassword.encode('utf-8'), hashed_password):
                         access_token = create_access_token(identity=uemail)
                         resp = Response('login successfull', status=200)
                         resp.set_cookie('jwt', access_token,
@@ -193,12 +197,11 @@ class AudioController:
                     last_name=name[name.index(" ")+1:]
                     print(first_name, last_name)
                     try:
-                        if email!=" " and email is not None:
+                        if email!=" ":
                             result = db.user.find_one({"email": email}, {'_id': 0, 'first_name': 1, 'last_name': 1,'password': 1})
                             if result is not None:
                                 try:
-                                    db.user.update_one({'email': email}, {'$push': {'first_name': first_name}})
-                                    db.user.update_one({'email': email}, {'$push': {'last_name': last_name}})
+                                    db.user.update_one({'email': email}, {'$push': {'first_name': first_name,'last_name': last_name}})
                                     return jsonify({"data":"Updated"}), 200
                                 except Exception as e:
                                     print(e)
@@ -219,8 +222,9 @@ class AudioController:
                             if (result != None):
                                 if result['password']!=None and result['password']!=" ":
                                     if bcrypt.checkpw(password.encode('utf-8'), result['password']):
-                                        hashed_password=bcrypt.hashpw(npassword.encode('utf-8'), bcrypt.gensalt())
-                                        print(hashed_password)
+                                        salt = bcrypt.gensalt()
+                                        hashed_password = bcrypt.hashpw(password.encode('utf-8'), salt)
+                                        hashed_password_str = base64.b64encode(hashed_password).decode('utf-8')
                                         db.user.update_one({'email': email}, {'$push': {'password': hashed_password}})
                                         return jsonify({"data": "Updated"})
                                     else:
