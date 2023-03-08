@@ -169,8 +169,9 @@ class AudioController:
         try:
             if email!=None and email!=" ":
                 if umail!=" ":
+                    print('Mail',umail)
                     try:
-                        if umail != '' and umail is not None:
+                        if umail != " ":
                             result = db.user.find_one({"email": email}, {'_id': 0, 'first_name': 1, 'last_name': 1,'password': 1})
                             if result is not None:
                                 try:
@@ -186,11 +187,13 @@ class AudioController:
                     except Exception as e:
                         print(e)
                         return "error"
-                if name!=" " and email!=" " and email!= None:
+                elif name!=" ":
+                    print('NAME',name)
                     first_name=name[:name.index("")]
                     last_name=name[name.index(" ")+1:]
+                    print(first_name, last_name)
                     try:
-                        if email!='' and email is not None:
+                        if email!=" " and email is not None:
                             result = db.user.find_one({"email": email}, {'_id': 0, 'first_name': 1, 'last_name': 1,'password': 1})
                             if result is not None:
                                 try:
@@ -207,7 +210,8 @@ class AudioController:
                     except Exception as e:
                         print(e)
                         return "error"
-                if password!=" " and len(cpassword)>0 and len(npassword)>0 :
+                elif password!=" " and len(cpassword)>0 and len(npassword)>0 :
+                    print('entered password')
                     try:
                         if (cpassword==npassword and email!=" " and email!=None):
                             result = db.user.find_one(
@@ -230,9 +234,9 @@ class AudioController:
                     except Exception as e:
                         print(e)
                         return "error"
-            else:
-                print("Unauthorized")
-                return jsonify({"data": "Unauthorized"})
+                else:
+                    print("Unauthorized")
+                    return jsonify({"data": "Unauthorized"})
         except Exception as e:
             print(e)
             return "error"
