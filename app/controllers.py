@@ -193,7 +193,7 @@ class AudioController:
                         return "error"
                 elif name!=" ":
                     print('NAME',name)
-                    first_name=name[:name.index("")]
+                    first_name=name[:name.index(" ")]
                     last_name=name[name.index(" ")+1:]
                     print(first_name, last_name)
                     try:
