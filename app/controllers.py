@@ -221,9 +221,9 @@ class AudioController:
                                 {"email": email, }, {'_id': 0, 'first_name': 1, 'last_name': 1,'password': 1})
                             if (result != None):
                                 if result['password']!=None and result['password']!=" ":
-                                    if bcrypt.checkpw(password.encode('utf-8'), result['password']):
-                                        salt = bcrypt.gensalt()
-                                        hashed_password = bcrypt.hashpw(password.encode('utf-8'), salt)
+                                    salt = bcrypt.gensalt()
+                                    hashed_password = base64.b64decode(result['password'])
+                                    if bcrypt.checkpw(password.encode('utf-8'), hashed_password):
                                         hashed_password_str = base64.b64encode(hashed_password).decode('utf-8')
                                         db.user.update_one({'email': email}, {'$set': {'password': hashed_password_str}})
                                         return jsonify({"data": "Updated"})
