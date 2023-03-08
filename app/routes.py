@@ -103,9 +103,11 @@ def summary():
         # gpt = models.SummarizerModel.gpt(input_text)
         lsa= models.SummarizerModel.lsa(input_text,num_sent)
         kl = models.SummarizerModel.kl(input_text,num_sent)
+        title=models.SummarizerModel.title(input_text)
         summary = {
             'lsa': lsa,
             'kl':kl,
+            'title': title,
         }
         return jsonify({"summary": summary}),200
     except Exception as e:
