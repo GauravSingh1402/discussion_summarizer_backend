@@ -156,5 +156,80 @@ class AudioController:
         except Exception as e:
             print(e)
             return "error"
+        
+        
+        
+    def eprofile(udata):
+        print(udata)
+        email=udata["email"]
+        umail=udata['umail']
+        name=udata['name']
+        password=udata['password']
+        npassword=udata['npassword']
+        cpassword=udata['cpassword']
+        try:
+            if umail!=" " and email!=" " and email!= None:
+                try:
+                    if umail != '' and umail is not None:
+                        result = db.user.find_one({"email": email}, {'_id': 0, 'first_name': 1, 'last_name': 1,'password': 1})
+                        if result is not None:
+                            try:
+                                db.user.update_one({'email': email}, {'$push': {'email': umail}})
+                                return jsonify({"data":"Updated"}), 200
+                            except Exception as e:
+                                print(e)
+                                return "error"
+                        else:
+                            return jsonify({"data": "User doesn't exist"})
+                    else:
+                        return jsonify({"data": "Fill all details"})
+                except Exception as e:
+                    print(e)
+                    return "error"
+            if name!=" " and email!=" " and email!= None:
+                first_name=name[:name.index("")]
+                last_name=name[name.index(" ")+1:]
+                try:
+                    if email!='' and email is not None:
+                        result = db.user.find_one({"email": email}, {'_id': 0, 'first_name': 1, 'last_name': 1,'password': 1})
+                        if result is not None:
+                            try:
+                                db.user.update_one({'email': email}, {'$push': {'first_name': first_name}})
+                                db.user.update_one({'email': email}, {'$push': {'last_name': last_name}})
+                                return jsonify({"data":"Updated"}), 200
+                            except Exception as e:
+                                print(e)
+                                return "error"
+                        else:
+                            return jsonify({"data": "User doesn't exist"})
+                    else:
+                        return jsonify({"data": "Fill all details"})
+                except Exception as e:
+                    print(e)
+                    return "error"
+            if password!=" " and cpassword.length>0 and npassword.length>0 :
+                try:
+                    if (cpassword==npassword and email!=" " and email!=None):
+                        result = db.user.find_one(
+                            {"email": email, }, {'_id': 0, 'first_name': 1, 'last_name': 1,'password': 1})
+                        if (result != None):
+                            if result['password']!=None and result['password']!=" ":
+                                if bcrypt.checkpw(password.encode('utf-8'), result['password']):
+                                    hashed_password=bcrypt.hashpw(npassword.encode('utf-8'), bcrypt.gensalt())
+                                    db.user.update_one({'email': email}, {'$push': {'password': hashed_password}})
+                                else:
+                                    return jsonify({"data": "incorrect credentials"})
+                            else:
+                                return jsonify({"data": "Google"})
+                        else:
+                            return jsonify({"data": "User doesnt exsist"})
+                    else:
+                        return jsonify({"data" : "Fill all details"})
+                except Exception as e:
+                    print(e)
+                    return "error"
+        except Exception as e:
+            print(e)
+            return "error"
 
             

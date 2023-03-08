@@ -91,6 +91,15 @@ def video():
     except:
         print("Error")
         
+@app.route('/eprofile/', methods=['GET', 'POST'])
+def eprofile():
+    user_data=request.get_json()
+    print("User data",user_data)
+    try:
+        return controllers.AudioController.eprofile(user_data)
+    except:
+        print("Error")
+        
 
 
 @app.route('/summarize', methods=['GET', 'POST'])
