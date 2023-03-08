@@ -158,12 +158,13 @@ class AudioController:
         
     def eprofile(udata):
         user_data=udata
+        print(user_data)
         email=user_data["email"]
-        umail=user_data['umail']
-        name=user_data['name']
-        password=user_data['password']
-        npassword=user_data['npassword']
-        cpassword=user_data['cpassword']
+        umail=user_data["umail"]
+        name=user_data["name"]
+        password=user_data["password"]
+        npassword=user_data["npassword"]
+        cpassword=user_data["cpassword"]
         print(cpassword,email,name,password,npassword)
         try:
             if email!=None and email!=" ":
