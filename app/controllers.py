@@ -179,7 +179,7 @@ class AudioController:
                             result = db.user.find_one({"email": email}, {'_id': 0, 'first_name': 1, 'last_name': 1,'password': 1})
                             if result is not None:
                                 try:
-                                    db.user.update_one({'email': email}, {'$push': {'email': umail}})
+                                    db.user.update_one({'email': email}, {'$set': {'email': umail}})
                                     return jsonify({"data":"Updated"}), 200
                                 except Exception as e:
                                     print(e)
@@ -201,7 +201,7 @@ class AudioController:
                             result = db.user.find_one({"email": email}, {'_id': 0, 'first_name': 1, 'last_name': 1,'password': 1})
                             if result is not None:
                                 try:
-                                    db.user.update_one({'email': email}, {'$push': {'first_name': first_name,'last_name': last_name}})
+                                    db.user.update_one({'email': email}, {'$set': {'first_name': first_name, 'last_name': last_name}})
                                     return jsonify({"data":"Updated"}), 200
                                 except Exception as e:
                                     print(e)
@@ -225,7 +225,7 @@ class AudioController:
                                         salt = bcrypt.gensalt()
                                         hashed_password = bcrypt.hashpw(password.encode('utf-8'), salt)
                                         hashed_password_str = base64.b64encode(hashed_password).decode('utf-8')
-                                        db.user.update_one({'email': email}, {'$push': {'password': hashed_password}})
+                                        db.user.update_one({'email': email}, {'$set': {'password': hashed_password_str}})
                                         return jsonify({"data": "Updated"})
                                     else:
                                         return jsonify({"data": "incorrect credentials"})
