@@ -48,7 +48,6 @@ class AudioController:
                 email = x['email']
                 first_name = x['first_name']
                 last_name = x['last_name']
-                print(email, first_name, last_name)
                 result = db.user.find_one(
                     {"email": email, }, {'_id': 0, 'first_name': 1, 'last_name': 1})
                 if not result:
@@ -113,7 +112,6 @@ class AudioController:
     def auth():
         try:
             user_id = request.cookies.get('jwt')
-            print(user_id)
             if not user_id:
                 return jsonify({"data": "Unauthorized"})
             else:
@@ -121,7 +119,6 @@ class AudioController:
                 user_id = jwt_payload['sub']
                 result = db.user.find_one(
                     {"email": user_id}, {'_id': 0, 'first_name': 1, 'last_name': 1,'summary':1})
-                print(result)
                 return jsonify({"user_id": user_id,"other_info":result}), 200
         except Exception as e:
             print(e)
@@ -160,7 +157,6 @@ class AudioController:
         
         
     def eprofile(udata):
-        print(udata)
         user_data=udata
         email=user_data["email"]
         umail=user_data['umail']
@@ -168,69 +164,74 @@ class AudioController:
         password=user_data['password']
         npassword=user_data['npassword']
         cpassword=user_data['cpassword']
+        print(cpassword,email,name,password,npassword)
         try:
-            if umail!=" " and email!=" " and email!= None:
-                try:
-                    if umail != '' and umail is not None:
-                        result = db.user.find_one({"email": email}, {'_id': 0, 'first_name': 1, 'last_name': 1,'password': 1})
-                        if result is not None:
-                            try:
-                                db.user.update_one({'email': email}, {'$push': {'email': umail}})
-                                return jsonify({"data":"Updated"}), 200
-                            except Exception as e:
-                                print(e)
-                                return "error"
-                        else:
-                            return jsonify({"data": "User doesn't exist"})
-                    else:
-                        return jsonify({"data": "Fill all details"})
-                except Exception as e:
-                    print(e)
-                    return "error"
-            if name!=" " and email!=" " and email!= None:
-                first_name=name[:name.index("")]
-                last_name=name[name.index(" ")+1:]
-                try:
-                    if email!='' and email is not None:
-                        result = db.user.find_one({"email": email}, {'_id': 0, 'first_name': 1, 'last_name': 1,'password': 1})
-                        if result is not None:
-                            try:
-                                db.user.update_one({'email': email}, {'$push': {'first_name': first_name}})
-                                db.user.update_one({'email': email}, {'$push': {'last_name': last_name}})
-                                return jsonify({"data":"Updated"}), 200
-                            except Exception as e:
-                                print(e)
-                                return "error"
-                        else:
-                            return jsonify({"data": "User doesn't exist"})
-                    else:
-                        return jsonify({"data": "Fill all details"})
-                except Exception as e:
-                    print(e)
-                    return "error"
-            if password!=" " and len(cpassword)>0 and len(npassword)>0 :
-                try:
-                    if (cpassword==npassword and email!=" " and email!=None):
-                        result = db.user.find_one(
-                            {"email": email, }, {'_id': 0, 'first_name': 1, 'last_name': 1,'password': 1})
-                        if (result != None):
-                            if result['password']!=None and result['password']!=" ":
-                                if bcrypt.checkpw(password.encode('utf-8'), result['password']):
-                                    hashed_password=bcrypt.hashpw(npassword.encode('utf-8'), bcrypt.gensalt())
-                                    print(hashed_password)
-                                    db.user.update_one({'email': email}, {'$push': {'password': hashed_password}})
-                                    return jsonify({"data": "Updated"})
-                                else:
-                                    return jsonify({"data": "incorrect credentials"})
+            if email!=None and email!=" ":
+                if umail!=" ":
+                    try:
+                        if umail != '' and umail is not None:
+                            result = db.user.find_one({"email": email}, {'_id': 0, 'first_name': 1, 'last_name': 1,'password': 1})
+                            if result is not None:
+                                try:
+                                    db.user.update_one({'email': email}, {'$push': {'email': umail}})
+                                    return jsonify({"data":"Updated"}), 200
+                                except Exception as e:
+                                    print(e)
+                                    return "error"
                             else:
-                                return jsonify({"data": "Google"})
+                                return jsonify({"data": "User doesn't exist"})
                         else:
-                            return jsonify({"data": "User doesnt exsist"})
-                    else:
-                        return jsonify({"data" : "Fill all details"})
-                except Exception as e:
-                    print(e)
-                    return "error"
+                            return jsonify({"data": "Fill all details"})
+                    except Exception as e:
+                        print(e)
+                        return "error"
+                if name!=" " and email!=" " and email!= None:
+                    first_name=name[:name.index("")]
+                    last_name=name[name.index(" ")+1:]
+                    try:
+                        if email!='' and email is not None:
+                            result = db.user.find_one({"email": email}, {'_id': 0, 'first_name': 1, 'last_name': 1,'password': 1})
+                            if result is not None:
+                                try:
+                                    db.user.update_one({'email': email}, {'$push': {'first_name': first_name}})
+                                    db.user.update_one({'email': email}, {'$push': {'last_name': last_name}})
+                                    return jsonify({"data":"Updated"}), 200
+                                except Exception as e:
+                                    print(e)
+                                    return "error"
+                            else:
+                                return jsonify({"data": "User doesn't exist"})
+                        else:
+                            return jsonify({"data": "Fill all details"})
+                    except Exception as e:
+                        print(e)
+                        return "error"
+                if password!=" " and len(cpassword)>0 and len(npassword)>0 :
+                    try:
+                        if (cpassword==npassword and email!=" " and email!=None):
+                            result = db.user.find_one(
+                                {"email": email, }, {'_id': 0, 'first_name': 1, 'last_name': 1,'password': 1})
+                            if (result != None):
+                                if result['password']!=None and result['password']!=" ":
+                                    if bcrypt.checkpw(password.encode('utf-8'), result['password']):
+                                        hashed_password=bcrypt.hashpw(npassword.encode('utf-8'), bcrypt.gensalt())
+                                        print(hashed_password)
+                                        db.user.update_one({'email': email}, {'$push': {'password': hashed_password}})
+                                        return jsonify({"data": "Updated"})
+                                    else:
+                                        return jsonify({"data": "incorrect credentials"})
+                                else:
+                                    return jsonify({"data": "Google"})
+                            else:
+                                return jsonify({"data": "User doesnt exsist"})
+                        else:
+                            return jsonify({"data" : "Fill all details"})
+                    except Exception as e:
+                        print(e)
+                        return "error"
+            else:
+                print("Unauthorized")
+                return jsonify({"data": "Unauthorized"})
         except Exception as e:
             print(e)
             return "error"
