@@ -207,7 +207,7 @@ class AudioController:
                 except Exception as e:
                     print(e)
                     return "error"
-            if password!=" " and cpassword.length>0 and npassword.length>0 :
+            if password!=" " and len(cpassword)>0 and len(npassword)>0 :
                 try:
                     if (cpassword==npassword and email!=" " and email!=None):
                         result = db.user.find_one(
