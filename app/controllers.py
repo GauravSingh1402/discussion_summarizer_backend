@@ -261,6 +261,7 @@ class AudioController:
             msg = Message('Reset Your Password', sender=os.environ.get('EMAIL'), recipients=[e_mail])
             msg.body = f"Click the link to reset your password: http://localhost:3000/reset_password/{token}"
             mail.send(msg)
+            return jsonify({"data": "success"})
         except Exception as e:
             print(e)
             return "error"
