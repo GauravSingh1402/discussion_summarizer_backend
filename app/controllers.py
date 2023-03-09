@@ -256,8 +256,8 @@ class AudioController:
         e_mail=email
         try:
             token = create_access_token(identity=email)
-            print(token)
-            msg = Message('Reset Your Password', sender=os.environ.get('EMAIL'), recipients=[e_mail])
+            sender=os.environ.get('EMAIL')
+            msg = Message('Reset Your Password', sender=os.environ.get('MAIL_USERNAME'), recipients=[e_mail])
             msg.body = f"Click the link to reset your password: http://localhost:3000/reset_password/{token}"
             mail.send(msg)
             return jsonify({"data": "success"})
@@ -265,22 +265,26 @@ class AudioController:
             print(e)
             return "error"
         
-    def reset_password(token, password,cpassword):
-        uemail = get_jwt_identity(token)
-        print(uemail)
+    def reset_password(password,cpassword,token):
+        tok=token
+        passw=password
+        try:
+            uemail = get_jwt_identity()
+        except Exception as e:
+            print('error',e)
+            return "error"
         try:
             result = db.user.find_one(
                     {"email": uemail, }, {'_id': 0, 'first_name': 1, 'last_name': 1,'password': 1})
             if (result != None):
                 if result['password']!=None and result['password']!=" ":
                     salt = bcrypt.gensalt()
-                    hashed_password = base64.b64decode(result['password'])
                     uhashed_password = bcrypt.hashpw(password.encode('utf-8'), salt)
                     hashed_password_str = base64.b64encode(uhashed_password).decode('utf-8')
                     db.user.update_one({'email': uemail}, {'$set': {'password': hashed_password_str}})
                     return jsonify({"data": "Updated"})
                 else:
-                    return jsonify({"data": "incorrect credentials"})
+                    return jsonify({"data": "Google"})
             else:
                 return jsonify({"data": "User doesnt exsist"})
         except Exception as e:

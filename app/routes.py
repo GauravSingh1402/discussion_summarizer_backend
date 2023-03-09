@@ -109,11 +109,12 @@ def forgot_password():
         print("Error")
 
 @app.route('/reset_password', methods=['GET', 'POST'])
+@jwt_required()
 def reset_password():
     pass_word=request.get_json()
     password=pass_word['password']
     cpassword=pass_word['cpassword']
-    token = request.args.get('token')
+    token = pass_word['token']
     try:
         return controllers.AudioController.reset_password(password,cpassword,token)
     except:

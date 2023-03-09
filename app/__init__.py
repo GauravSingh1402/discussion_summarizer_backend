@@ -19,12 +19,11 @@ app.config['JWT_SECRET_KEY'] = config.Config.JWT_SECRET_KEY
 app.config['MAIL_SERVER'] = 'smtp.gmail.com'
 app.config['MAIL_PORT'] = os.environ.get('MAIL_PORT')
 app.config['MAIL_USE_SSL'] = True
-app.config['MAIL_USERNAME'] = os.environ.get('EMAIL')
-app.config['MAIL_PASSWORD'] = os.environ.get('PASSWORD')
+app.config['MAIL_USERNAME'] = os.environ.get('MAIL_USERNAME')
+app.config['MAIL_PASSWORD'] = os.environ.get('MAIL_PASSWORD')
 
 jwt = JWTManager(app)
 mail=Mail(app)
-serializer = URLSafeTimedSerializer(app.config['SECRET_KEY'])
 Session(app)
 
 conn_string = config.Config.DATABASE_URI
