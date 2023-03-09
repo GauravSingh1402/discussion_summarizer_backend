@@ -1,6 +1,7 @@
 from flask import jsonify, request, session, Response,url_for,redirect
 # from app import app
 from app import db
+from app import mail
 from datetime import datetime
 from flask_session import Session
 import bcrypt
