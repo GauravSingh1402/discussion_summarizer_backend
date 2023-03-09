@@ -1,4 +1,4 @@
-from flask import jsonify, request, session, Response
+from flask import jsonify, request, session, Response,url_for,redirect
 # from app import app
 from app import db
 from datetime import datetime
@@ -8,7 +8,9 @@ import base64
 import os
 from flask_bcrypt import check_password_hash
 from flask_jwt_extended import decode_token,create_access_token, get_jwt, get_jwt_identity,unset_jwt_cookies, jwt_required, JWTManager
+from flask_mail import Mail, Message
 import hashlib
+from datetime import datetime, timedelta
 
 
 class AudioController:
@@ -245,5 +247,28 @@ class AudioController:
         except Exception as e:
             print(e)
             return "error"
+        
+     
+    
+    
+    def forgot_password(email):
+        mail=email
+        try:
+            salt = bcrypt.gensalt()
+            hashed_mail = bcrypt.hashpw(mail.encode('utf-8'), salt)
+            token = base64.b64encode(hashed_mail).decode('utf-8')
+            msg = Message('Reset Your Password', sender=os.environ.get('EMAIL'), recipients=[email])
+            msg.body = f"Click the link to reset your password: http://localhost:3000/reset_password/{token}"
+            mail.send(msg)
+        except Exception as e:
+            print(e)
+            return "error"
+        
+    def reset_password(token, password):
+        try:
+            pass
+        except Exception as e:
+            print(e)
+            return "error"
 
-            
+  
