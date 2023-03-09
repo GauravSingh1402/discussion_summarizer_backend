@@ -257,6 +257,7 @@ class AudioController:
             salt = bcrypt.gensalt()
             hashed_mail = bcrypt.hashpw(e_mail.encode('utf-8'), salt)
             token = base64.b64encode(hashed_mail).decode('utf-8')
+            print(token)
             msg = Message('Reset Your Password', sender=os.environ.get('EMAIL'), recipients=[e_mail])
             msg.body = f"Click the link to reset your password: http://localhost:3000/reset_password/{token}"
             mail.send(msg)
