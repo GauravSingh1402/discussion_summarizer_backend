@@ -252,12 +252,12 @@ class AudioController:
     
     
     def forgot_password(email):
-        mail=email
+        e_mail=email
         try:
             salt = bcrypt.gensalt()
-            hashed_mail = bcrypt.hashpw(mail.encode('utf-8'), salt)
+            hashed_mail = bcrypt.hashpw(e_mail.encode('utf-8'), salt)
             token = base64.b64encode(hashed_mail).decode('utf-8')
-            msg = Message('Reset Your Password', sender=os.environ.get('EMAIL'), recipients=[email])
+            msg = Message('Reset Your Password', sender=os.environ.get('EMAIL'), recipients=[e_mail])
             msg.body = f"Click the link to reset your password: http://localhost:3000/reset_password/{token}"
             mail.send(msg)
         except Exception as e:
