@@ -109,11 +109,13 @@ def forgot_password():
         print("Error")
 
 @app.route('/reset_password', methods=['GET', 'POST'])
-def forgot_password():
-    umail=request.get_json()
-    email=umail['email']
+def reset_password():
+    pass_word=request.get_json()
+    password=pass_word['password']
+    cpassword=pass_word['cpassword']
+    token = request.args.get('token')
     try:
-        return controllers.AudioController.forgot_password(email)
+        return controllers.AudioController.reset_password(password,cpassword,token)
     except:
         print("Error")
 
