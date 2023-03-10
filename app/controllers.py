@@ -130,7 +130,7 @@ class AudioController:
                 jwt_payload = decode_token(user_id)
                 user_id = jwt_payload['sub']
                 result = db.user.find_one(
-                    {"email": user_id}, {'_id': 0, 'first_name': 1, 'last_name': 1,'summary':1,'isGoogle':1})
+                    {"email": user_id}, {'_id': 0, 'first_name': 1, 'last_name': 1,'summary':1,'isGoogle':1,'image':1})
                 return jsonify({"user_id": user_id,"other_info":result}), 200
         except Exception as e:
             print(e)
@@ -177,6 +177,7 @@ class AudioController:
         password=user_data["password"]
         npassword=user_data["npassword"]
         cpassword=user_data["cpassword"]
+        photo=user_data["image"]
         print(cpassword,email,name,password,npassword)
         try:
             if email!=None and email!=" ":
@@ -188,6 +189,24 @@ class AudioController:
                             if result is not None:
                                 try:
                                     db.user.update_one({'email': email}, {'$set': {'email': umail}})
+                                    return jsonify({"data":"Updated"}), 200
+                                except Exception as e:
+                                    print(e)
+                                    return "error"
+                            else:
+                                return jsonify({"data": "User doesn't exist"})
+                        else:
+                            return jsonify({"data": "Fill all details"})
+                    except Exception as e:
+                        print(e)
+                        return "error"
+                elif photo!=" ":
+                    try:
+                        if email!=" ":
+                            result = db.user.find_one({"email": email}, {'_id': 0, 'first_name': 1, 'last_name': 1,'password': 1})
+                            if result is not None:
+                                try:
+                                    db.user.update_one({'email': email}, {'$set': {'image': photo}})
                                     return jsonify({"data":"Updated"}), 200
                                 except Exception as e:
                                     print(e)
