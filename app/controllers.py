@@ -37,6 +37,7 @@ class AudioController:
                         "last_name": last_name,
                         "password": hashed_password_str,
                         "summary":[],
+                        "isGoogle": False,
                         "created_date": datetime.utcnow()
                     })
                     return jsonify({"data" : "Inserted"}),200
@@ -62,6 +63,7 @@ class AudioController:
                         "first_name": first_name,
                         "last_name": last_name,
                         "summary":[],
+                        "isGoogle": True,
                         "created_date": datetime.utcnow()
                     })
                     return jsonify({"data" : "Inserted"}),200
@@ -76,8 +78,8 @@ class AudioController:
             if (x['email'] != ''):
                 email = x['email']
                 result = db.user.find_one(
-                    {"email": email, }, {'_id': 0, 'first_name': 1, 'last_name': 1})
-                if (result != None):
+                    {"email": email, }, {'_id': 0, 'first_name': 1, 'last_name': 1,'isGoogle':1})
+                if (result != None and result['isGoogle']==True):
                     access_token = create_access_token(identity=email)
                     resp = Response('login successfull', status=200)
                     resp.set_cookie('jwt', access_token,
@@ -97,8 +99,8 @@ class AudioController:
                 uemail = x['email']
                 upassword=x['password']
                 result = db.user.find_one(
-                    {"email": uemail, }, {'_id': 0, 'first_name': 1, 'last_name': 1,'password': 1})
-                if (result != None):
+                    {"email": uemail, }, {'_id': 0, 'first_name': 1, 'last_name': 1,'password': 1,'isGoogle':1})
+                if (result != None and result['isGoogle']==False):
                     hashed_password = base64.b64decode(result['password'])
                     if bcrypt.checkpw(upassword.encode('utf-8'), hashed_password):
                         access_token = create_access_token(identity=uemail)
@@ -125,7 +127,7 @@ class AudioController:
                 jwt_payload = decode_token(user_id)
                 user_id = jwt_payload['sub']
                 result = db.user.find_one(
-                    {"email": user_id}, {'_id': 0, 'first_name': 1, 'last_name': 1,'summary':1})
+                    {"email": user_id}, {'_id': 0, 'first_name': 1, 'last_name': 1,'summary':1,'isGoogle':1})
                 return jsonify({"user_id": user_id,"other_info":result}), 200
         except Exception as e:
             print(e)
@@ -256,7 +258,6 @@ class AudioController:
         e_mail=email
         try:
             token = create_access_token(identity=email)
-            sender=os.environ.get('EMAIL')
             msg = Message('Reset Your Password', sender=os.environ.get('MAIL_USERNAME'), recipients=[e_mail])
             msg.body = f"Click the link to reset your password: http://localhost:3000/reset_password/{token}"
             mail.send(msg)
@@ -278,10 +279,13 @@ class AudioController:
                     {"email": uemail, }, {'_id': 0, 'first_name': 1, 'last_name': 1,'password': 1})
             if (result != None):
                 if result['password']!=None and result['password']!=" ":
-                    salt = bcrypt.gensalt()
-                    uhashed_password = bcrypt.hashpw(password.encode('utf-8'), salt)
-                    hashed_password_str = base64.b64encode(uhashed_password).decode('utf-8')
-                    db.user.update_one({'email': uemail}, {'$set': {'password': hashed_password_str}})
+                    if(passw==cpassword):
+                        salt = bcrypt.gensalt()
+                        uhashed_password = bcrypt.hashpw(password.encode('utf-8'), salt)
+                        hashed_password_str = base64.b64encode(uhashed_password).decode('utf-8')
+                        db.user.update_one({'email': uemail}, {'$set': {'password': hashed_password_str}})
+                    else:
+                        return jsonify({'data': 'Passwords do not match'})
                     return jsonify({"data": "Updated"})
                 else:
                     return jsonify({"data": "Google"})
