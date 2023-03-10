@@ -37,6 +37,7 @@ class AudioController:
                         "last_name": last_name,
                         "password": hashed_password_str,
                         "summary":[],
+                        "photo":" ",
                         "isGoogle": False,
                         "created_date": datetime.utcnow()
                     })
@@ -55,6 +56,7 @@ class AudioController:
                 email = x['email']
                 first_name = x['first_name']
                 last_name = x['last_name']
+                photo=x['photo']
                 result = db.user.find_one(
                     {"email": email, }, {'_id': 0, 'first_name': 1, 'last_name': 1})
                 if not result:
@@ -64,6 +66,7 @@ class AudioController:
                         "last_name": last_name,
                         "summary":[],
                         "isGoogle": True,
+                        "photo":photo,
                         "created_date": datetime.utcnow()
                     })
                     return jsonify({"data" : "Inserted"}),200
@@ -259,7 +262,7 @@ class AudioController:
         try:
             token = create_access_token(identity=email)
             msg = Message('Reset Your Password', sender=os.environ.get('MAIL_USERNAME'), recipients=[e_mail])
-            msg.body = f"Click the link to reset your password: http://localhost:3000/reset_password/{token}"
+            msg.body = f"Click the link to reset your password: https://summa-sense.vercel.app/reset_password/{token}"
             mail.send(msg)
             return jsonify({"data": "success"})
         except Exception as e:
