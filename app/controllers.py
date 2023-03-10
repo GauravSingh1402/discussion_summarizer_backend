@@ -8,7 +8,7 @@ import bcrypt
 import base64
 import os
 from flask_bcrypt import check_password_hash
-from flask_jwt_extended import decode_token,create_access_token, get_jwt, get_jwt_identity,unset_jwt_cookies, jwt_required, JWTManager
+from flask_jwt_extended import decode_token,create_access_token, get_jwt, get_jwt_identity,unset_jwt_cookies, jwt_required, JWTManager,unset_access_cookies, unset_refresh_cookies
 from flask_mail import Mail, Message
 import hashlib
 from datetime import datetime, timedelta
@@ -141,6 +141,8 @@ class AudioController:
         try:
             response = jsonify({"msg": "logout successful"})
             unset_jwt_cookies(response)
+            unset_access_cookies(resp)
+            unset_refresh_cookies(resp)
             return response
         except Exception as e:
             print(e)
@@ -207,7 +209,7 @@ class AudioController:
                             result = db.user.find_one({"email": email}, {'_id': 0, 'first_name': 1, 'last_name': 1,'password': 1})
                             if result is not None:
                                 try:
-                                    db.user.update_one({'email': email}, {'$set': {'image': photo}})
+                                    db.user.update_one({'email': email}, {'$set': {'photo': photo}})
                                     return jsonify({"data":"Updated"}), 200
                                 except Exception as e:
                                     print(e)
