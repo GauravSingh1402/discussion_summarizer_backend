@@ -141,8 +141,8 @@ class AudioController:
         try:
             response = jsonify({"msg": "logout successful"})
             unset_jwt_cookies(response)
-            unset_access_cookies(resp)
-            unset_refresh_cookies(resp)
+            unset_access_cookies(response)
+            unset_refresh_cookies(response)
             return response
         except Exception as e:
             print(e)

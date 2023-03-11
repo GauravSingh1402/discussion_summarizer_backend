@@ -46,7 +46,6 @@ def glogin():
         print("Error")
         
 @app.route('/logout', methods=['GET', 'POST'])
-@jwt_required()
 def logout():
     try:
          return controllers.AudioController.logout()
