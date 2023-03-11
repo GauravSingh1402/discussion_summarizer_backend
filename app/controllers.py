@@ -142,9 +142,11 @@ class AudioController:
             resp = Response('logout successfull', status=200)
             try:
                 resp.delete_cookie('jwt', path='/')
+                return resp
             except Exception as e:
                 print(e)
                 print("cant delete cookie")
+                return "error occured"
         except Exception as e:
             print(e)
             return "error"
