@@ -131,6 +131,7 @@ class AudioController:
                 user_id = jwt_payload['sub']
                 result = db.user.find_one(
                     {"email": user_id}, {'_id': 0, 'first_name': 1, 'last_name': 1,'summary':1,'isGoogle':1,'photo':1})
+
                 return jsonify({"user_id": user_id,"other_info":result}), 200
         except Exception as e:
             print(e)
@@ -139,9 +140,7 @@ class AudioController:
     def logout():
         try:
             response = jsonify({"msg": "logout successful"})
-            unset_jwt_cookies(response)
-            unset_access_cookies(response)
-            unset_refresh_cookies(response)
+            response.delete_cookie('jwt')
             return response
         except Exception as e:
             print(e)
