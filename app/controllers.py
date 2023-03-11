@@ -139,9 +139,12 @@ class AudioController:
 
     def logout():
         try:
-            response = jsonify({"msg": "logout successful"})
-            response.delete_cookie('jwt')
-            return response
+            resp = Response('logout successfull', status=200)
+            try:
+                resp.delete_cookie('jwt', path='/')
+            except Exception as e:
+                print(e)
+                print("cant delete cookie")
         except Exception as e:
             print(e)
             return "error"
