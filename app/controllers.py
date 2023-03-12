@@ -86,7 +86,7 @@ class AudioController:
                     access_token = create_access_token(identity=email)
                     resp = Response('login successfull', status=200)
                     resp.set_cookie('jwt', access_token,
-                                    httponly=True, secure=True,samesite='None')
+                                    httponly=True, path='/',secure=True,samesite='None')
                     return resp
                 else:
                      return jsonify({"data" : "User doesnt exsist"})
@@ -109,7 +109,7 @@ class AudioController:
                         access_token = create_access_token(identity=uemail)
                         resp = Response('login successfull', status=200)
                         resp.set_cookie('jwt', access_token,
-                                        httponly=True, secure=True,samesite="None")
+                                        httponly=True, path='/',secure=True,samesite="None")
                         return resp
                     else:
                          return jsonify({"data": "incorrect credentials"})
@@ -139,9 +139,10 @@ class AudioController:
 
     def logout():
         try:
+            print(request.cookies)
             resp = Response('logout successfull', status=200)
             try:
-                resp.delete_cookie('jwt', path='/')
+                resp.set_cookie('jwt', '', max_age=0, path='/')
                 return resp
             except Exception as e:
                 print(e)
