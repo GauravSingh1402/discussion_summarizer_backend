@@ -139,10 +139,9 @@ class AudioController:
 
     def logout():
         try:
-            print(request.cookies)
             resp = Response('logout successfull', status=200)
             try:
-                resp.set_cookie('jwt', '', max_age=0, path='/')
+                resp.set_cookie('jwt', '', max_age=0, path='/',httponly=True,secure=True,samesite="None")
                 return resp
             except Exception as e:
                 print(e)
