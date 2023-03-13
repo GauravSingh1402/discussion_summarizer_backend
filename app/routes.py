@@ -129,9 +129,9 @@ def summary():
     try:
         processed_text = services.Service.listen(input_text)
         # gpt = models.SummarizerModel.gpt(input_text)
-        lsa= models.SummarizerModel.lsa(input_text,num_sent)
-        kl = models.SummarizerModel.kl(input_text,num_sent)
-        title=models.SummarizerModel.title(input_text)
+        lsa= models.SummarizerModel.lsa(processed_text,num_sent)
+        kl = models.SummarizerModel.kl(processed_text,num_sent)
+        title=models.SummarizerModel.title(processed_text)
         summary = {
             'lsa': lsa,
             'kl':kl,
