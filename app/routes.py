@@ -81,6 +81,15 @@ def save_summary():
     except:
         print("Error")
         
+@app.route('/download_summary', methods=['GET', 'POST'])
+def download_summary():
+    summary = request.get_json()
+    summ=summary['summary']
+    try:
+        return controllers.AudioController.download_summary(summ)
+    except:
+        print("Error")
+        
 @app.route('/video', methods=['GET', 'POST'])
 def video():
     print(request)
@@ -97,7 +106,7 @@ def eprofile():
     try:
         return controllers.AudioController.eprofile(user_data)
     except:
-        print("Error")
+        return "Error"
         
 @app.route('/forgot_password', methods=['GET', 'POST'])
 def forgot_password():

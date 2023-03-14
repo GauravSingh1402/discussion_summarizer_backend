@@ -1,4 +1,4 @@
-from flask import jsonify, request, session, Response,url_for,redirect
+from flask import jsonify, request, session, Response,url_for,redirect,send_file
 # from app import app
 from app import db
 from app import mail
@@ -11,6 +11,7 @@ from flask_bcrypt import check_password_hash
 from flask_jwt_extended import decode_token,create_access_token, get_jwt, get_jwt_identity,unset_jwt_cookies, jwt_required, JWTManager,unset_access_cookies, unset_refresh_cookies
 from flask_mail import Mail, Message
 import hashlib
+import io
 from datetime import datetime, timedelta
 
 
@@ -171,6 +172,20 @@ class AudioController:
         except Exception as e:
             print(e)
             return "error"
+        
+    def download_summary(text):
+        print(text)
+        try:
+            with io.StringIO(text) as f:
+                # Create an in-memory file object and write the summary text to it
+                # We use StringIO instead of a regular file object since we don't need to save the file to disk
+                file_content = f.read()
+                file_content_base64 = base64.b64encode(file_content.encode('utf-8'))
+                return file_content_base64.decode('utf-8')
+        except Exception as e:
+            print(e)
+            return "error"
+            
         
         
         
