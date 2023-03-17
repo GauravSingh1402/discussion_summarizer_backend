@@ -12,15 +12,23 @@ import numpy as np
 class Service:
     def listen(text):
         try:
-            nltk.download('omw-1.4')
-            nltk.download('stopwords')
-            nltk.download('wordnet')
-            nltk.download('punkt')
-            lemmatizer = WordNetLemmatizer()
-            clean_text = ' '.join([lemmatizer.lemmatize(word) for word in text.split() if word not in nltk.corpus.stopwords.words('english') and word not in string.punctuation])
-            for k in clean_text.split("\n"):
-                clean_text = re.sub(r"[^a-zA-Z0-9]+", ' ', k)
-            return clean_text
+            text = re.sub(r'\b(um|uh|ah|like)\b', '', text)
+            # Correct spelling and grammar errors
+            # (Assuming you have a dictionary of known spelling errors and their corrections)
+            # Remove irrelevant information
+            text = re.sub(r'\b(inaudible|background noise|laughter)\b', '', text)
+            # Standardize formatting
+            text = text.replace('\n', ' ')
+            text = re.sub(r'([.?!])\s+', r'\1 ', text)
+            # Identify and remove duplicates
+            sentences = text.split('. ')
+            unique_sentences = list(set(sentences))
+            # Segment the text into smaller chunks
+            chunks = [unique_sentences[i:i+5] for i in range(0, len(unique_sentences), 5)]
+            preprocessed_text = ''
+            for chunk in chunks:
+                preprocessed_text += '. '.join(chunk) + '.\n'
+            return preprocessed_text
         except Exception as e:
             print('s',e)
             return "error"

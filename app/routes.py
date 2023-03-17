@@ -128,25 +128,66 @@ def reset_password():
         return controllers.AudioController.reset_password(password,cpassword,token)
     except:
         print("Error")
+        
+        
 
 
 @app.route('/summarize', methods=['GET', 'POST'])
+
 def summary():
+    def classify_text(text):
+        f=0
+        gi=0
+        try:
+            keywords = {
+            'interview':["formal", "polite", "respectful", "professional", "appropriate", "courteous",
+                          "informal", "relaxed", "friendly", "lighthearted", "engaging", "natural", 
+                          "tech interview", "placement interview", "algorithm", "data structure", 
+                          "problem-solving", "coding", "software engineering", "agile methodology", 
+                          "object-oriented programming", "test-driven development", "version control", 
+                          "database management", "networking", "cybersecurity", "cloud computing", 
+                          "artificial intelligence", "machine learning", "big data","Speaker 1","Speaker 2","Interviewer","Interviewee"],
+            }
+            for category, words in keywords.items():
+                for word in words:
+                    if word.lower() in text.lower():
+                        f=1
+                        if category=='interview':
+                            gi+=1
+                        else:
+                            continue
+                if gi>=1:
+                    return 'interview'
+                else:
+                    return 'General'
+        except Exception as e:
+            print("error",e)
     text_obj = request.get_json()
     input_text = text_obj['text']
     num_sent = text_obj['num_sent']
     try:
         processed_text = services.Service.listen(input_text)
-        # gpt = models.SummarizerModel.gpt(input_text)
-        lsa= models.SummarizerModel.lsa(processed_text,num_sent)
-        kl = models.SummarizerModel.kl(processed_text,num_sent)
-        title=models.SummarizerModel.title(processed_text)
-        summary = {
-            'lsa': lsa,
-            'kl':kl,
-            'title': title,
-        }
-        return jsonify({"summary": summary}),200
+        genre=classify_text(processed_text)
+        bart = models.SummarizerModel.bart(processed_text)
+        convo_bart = models.SummarizerModel.convo_bart(processed_text)
+        title=models.SummarizerModel.title(bart)
+        lsa= models.SummarizerModel.lsa(input_text,num_sent)
+        kl = models.SummarizerModel.kl(input_text,num_sent)
+        if genre=="interview":
+            summary = {
+                'title': title,
+                'convo_bart':convo_bart,
+                'bart':bart
+            }
+            return jsonify({"summary": summary}),200
+        else:
+            summary={
+                'kl':kl,
+                'lsa':lsa,
+                'title': title,
+                'bart':bart
+            }
+            return jsonify({"summary": summary}),200
     except Exception as e:
             print('kl',e)
             return 'error'

@@ -17,79 +17,60 @@ from nltk.stem import WordNetLemmatizer
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.decomposition import TruncatedSVD
 from nltk.tokenize import sent_tokenize, word_tokenize
-# import cv2
-# import pytesseract
 from collections import Counter
+from transformers import BartForConditionalGeneration, BartTokenizer, AdamW
+from transformers import AutoTokenizer, T5ForConditionalGeneration
+import torch
 API_URL = "https://api-inference.huggingface.co/models/Hridayesh7/autotrain-summasense-3584196302"
 
 
+bart_tokenizer = BartTokenizer.from_pretrained("./model/bart/tokenizer")
+bart_model = BartForConditionalGeneration.from_pretrained("./model/bart/model")
+title_tokenizer = AutoTokenizer.from_pretrained("./model/title/tokenizer")
+title_model = T5ForConditionalGeneration.from_pretrained("./model/title/model")
+conversation_tokenizer = BartTokenizer.from_pretrained("./model/interview/tokenizer")
+conversation_model = BartForConditionalGeneration.from_pretrained("./model/interview/model")
 
 class SummarizerModel:
-    
+
     def title(text):
-    # Load pre-trained T5 model
-        print(text)
-        nltk.download('omw-1.4')
-        nltk.download('stopwords')
-        nltk.download('wordnet')
-        nltk.download('punkt')
         try:
-            print("hi")
-            # Load pre-trained T5 model
-            sentences = sent_tokenize(text)
-            words = word_tokenize(text.lower())
-            # Remove stopwords and punctuation
-            stepwords = set(stopwords.words('english') + list(punctuation))
-            filtered_words = [word for word in words if word not in stepwords]
-            # Build a dictionary of word frequencies
-            word_freq = defaultdict(int)
-            for word in filtered_words:
-                word_freq[word] += 1
-            # Normalize the word frequencies
-            max_freq = max(word_freq.values())
-            for word in word_freq:
-                word_freq[word] = word_freq[word]/max_freq
-            # Build a dictionary of sentence scores based on word frequencies
-            sentence_scores = defaultdict(int)
-            for i, sentence in enumerate(sentences):
-                for word in word_tokenize(sentence.lower()):
-                    if word in word_freq:
-                        sentence_scores[i] += word_freq[word]
-            # Get the top N sentences based on their scores
-            num_sentences = 1
-            top_sentences = nlargest(num_sentences, sentence_scores, key=sentence_scores.get)
-            # Generate the summary or title from the top sentences
-            title = ' '.join([sentences[i] for i in sorted(top_sentences)])
-            print(title)
+            article = text
+            inputs = title_tokenizer.encode(article, return_tensors='pt')
+            title_ids = title_model.generate(inputs, max_length=50, num_beams=4, early_stopping=True)
+            title = title_tokenizer.decode(title_ids.squeeze(), skip_special_tokens=True)
+            print("Generated title :", title) 
             return title
         except Exception as e:
             print(e)
             return "error"
         
-    def t5_summarizer(text,stop_words,top):
-        try:
-            while True:
-                loading_response = requests.get(API_URL)
-                if loading_response.json()["model_status"]["ready"]:
-                    break
-                time.sleep(loading_response.json()["model_status"]["estimated_time"])
-            headers = {"Authorization": "Bearer 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"}
-            data = {
-                "inputs": f"summarize: {text}",
-                 "parameters": {
-                    "do_sample": True,
-                    "max_length": stop_words,
-                    "top_k": top,
-                    "num_return_sequences": 1,
-                    },
-                }
-            response = requests.post(API_URL, headers=headers, json=data)
-            print("Yup",response.json())
-            summary = response.json()[0]['summary_text']
-            return jsonify({"summary": summary}),200
-        except Exception as e:
-            print("K",e)
-            return "error"
+        
+
+    # def t5_summarizer(text,stop_words,top):
+    #     try:
+    #         while True:
+    #             loading_response = requests.get(API_URL)
+    #             if loading_response.json()["model_status"]["ready"]:
+    #                 break
+    #             time.sleep(loading_response.json()["model_status"]["estimated_time"])
+    #         headers = {"Authorization": "Bearer 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"}
+    #         data = {
+    #             "inputs": f"summarize: {text}",
+    #              "parameters": {
+    #                 "do_sample": True,
+    #                 "max_length": stop_words,
+    #                 "top_k": top,
+    #                 "num_return_sequences": 1,
+    #                 },
+    #             }
+    #         response = requests.post(API_URL, headers=headers, json=data)
+    #         print("Yup",response.json())
+    #         summary = response.json()[0]['summary_text']
+    #         return jsonify({"summary": summary}),200
+    #     except Exception as e:
+    #         print("K",e)
+    #         return "error"
 
     # def gpt(text):
     #     try:
@@ -106,8 +87,33 @@ class SummarizerModel:
     #     except Exception as e:
     #         print("H",e)
     #         return "error"
-
+    def bart(text):
+        try:
+            input_ids = bart_tokenizer(text, truncation=True, padding='longest', return_tensors='pt').input_ids
+            summary_ids = bart_model.generate(input_ids,min_length=10, max_length=80, num_beams=4, early_stopping=True)
+            summary = bart_tokenizer.decode(summary_ids[0], skip_special_tokens=True)
+            print('Normal bart ',summary)
+            return summary
+        except Exception as e:
+            print("Error:", e)
+            return "error"
         
+        
+    def convo_bart(text):
+        try:
+            conversation=text
+            inputs = conversation_tokenizer.encode(conversation, return_tensors='pt')
+            summary_ids = conversation_model.generate(inputs, num_beams=4, max_length=200, early_stopping=True)
+            summary = conversation_tokenizer.decode(summary_ids.squeeze(), skip_special_tokens=True)
+            print("Generated summary:", summary) 
+            return summary
+        except Exception as e:
+            print("Error:", e)
+            return "error"
+        
+        
+        
+          
     def lsa(text,num_sent):
         try:
             stop_words = set(stopwords.words('english'))
