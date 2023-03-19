@@ -9,6 +9,7 @@ import base64
 import os
 from flask_bcrypt import check_password_hash
 from flask_jwt_extended import decode_token,create_access_token, get_jwt, get_jwt_identity,unset_jwt_cookies, jwt_required, JWTManager,unset_access_cookies, unset_refresh_cookies
+from bson.objectid import ObjectId
 from flask_mail import Mail, Message
 import hashlib
 import io
@@ -122,18 +123,51 @@ class AudioController:
             print(e)
             return "error"
         
+    def delete_summary(u_mail,summ):
+        try:
+            summ_id=ObjectId(summ)
+            result = db.user.update_one(
+        {"email": u_mail},
+        {"$pull": {"summary": {"summary_id": summ_id}}}
+    )
+            if result.modified_count > 0:
+                return jsonify({"message": "Summary item deleted."})
+            else:
+                return jsonify({"message": "No summary item found."})
+        except Exception as e:
+            print(e)
+            return "error"
+        
     def auth():
         try:
-            user_id = request.cookies.get('jwt')
+            user_id = request.cookies.get('jwt') 
             if not user_id:
                 return jsonify({"data": "Unauthorized"})
             else:
                 jwt_payload = decode_token(user_id)
                 user_id = jwt_payload['sub']
-                result = db.user.find_one(
-                    {"email": user_id}, {'_id': 0, 'first_name': 1, 'last_name': 1,'summary':1,'isGoogle':1,'photo':1})
-
-                return jsonify({"user_id": user_id,"other_info":result}), 200
+                result = db.user.aggregate([
+        {"$match": {"email": user_id}},
+        {"$project": {
+            "_id": 0,
+            "first_name": 1,
+            "last_name": 1,
+            "isGoogle": 1,
+            "photo": 1,
+            "summary": {"$map": {
+                "input": "$summary",
+                "as": "item",
+                "in": {
+                    "title": "$$item.title",
+                    "text": "$$item.text",
+                    "summary": "$$item.summary",
+                    "summary_id": {"$toString": "$$item.summary_id"},
+                }
+            }}
+        }}
+    ]).next()
+                final_result=result
+                return jsonify({"user_id": user_id,"other_info":final_result}), 200
         except Exception as e:
             print(e)
             return "error"
@@ -154,7 +188,10 @@ class AudioController:
         
     def save_summary(u_mail, summ):
         mail=u_mail
+        new_id = ObjectId()
         summary=summ
+        summary['summary_id']=new_id
+        print(summary)
         try:
             if mail != '' and mail is not None:
                 result = db.user.find_one({"email": mail}, {'_id': 0, 'first_name': 1, 'last_name': 1,'password': 1})
@@ -184,7 +221,7 @@ class AudioController:
                 return file_content_base64.decode('utf-8')
         except Exception as e:
             print(e)
-            return "error"
+            return jsonify({"data": "error occured"})
             
         
         

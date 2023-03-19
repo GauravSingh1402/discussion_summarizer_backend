@@ -81,6 +81,17 @@ def save_summary():
     except:
         print("Error")
         
+        
+@app.route('/delete_summary', methods=['GET', 'POST'])
+def delete_summary():
+    mail = request.get_json()
+    u_mail=mail['u_mail']
+    summ=mail['summ_id']
+    try:
+        return controllers.AudioController.delete_summary(u_mail,summ)
+    except:
+        print("Error")
+        
 @app.route('/download_summary', methods=['GET', 'POST'])
 def download_summary():
     summary = request.get_json()
