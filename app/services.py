@@ -8,8 +8,28 @@ from nltk.stem import WordNetLemmatizer
 from nltk.tokenize import sent_tokenize, word_tokenize
 from collections import Counter
 import numpy as np
-
+from langdetect import detect, LangDetectException
+from googletrans import Translator
 class Service:
+    def translate_text(text):
+        try:
+            translated_segments = []
+            segments = text.split(':')
+            for segment in segments:
+                try:
+                    language = detect(segment)
+                    if language != 'en':
+                        translator = Translator()
+                        translated_segment = translator.translate(segment, dest='en').text
+                        translated_segments.append(translated_segment)
+                    else:
+                        translated_segments.append(segment)
+                except LangDetectException:
+                    pass
+            return ':'.join(translated_segments)
+        except Exception as e:
+                    print('s',e)
+                    return "error"
     def listen(text):
         try:
             text = re.sub(r'\b(um|uh|ah|like)\b', '', text)
