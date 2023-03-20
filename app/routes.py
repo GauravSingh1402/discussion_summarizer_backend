@@ -182,8 +182,8 @@ def summary():
         bart = models.SummarizerModel.bart(processed_text)
         convo_bart = models.SummarizerModel.convo_bart(processed_text)
         title=models.SummarizerModel.title(bart)
-        lsa= models.SummarizerModel.lsa(input_text,num_sent)
-        kl = models.SummarizerModel.kl(input_text,num_sent)
+        lsa= models.SummarizerModel.lsa(input_text)
+        kl = models.SummarizerModel.kl(input_text)
         if genre=="interview":
             summary = {
                 'title': title,

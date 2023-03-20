@@ -88,11 +88,16 @@ class SummarizerModel:
     #         print("H",e)
     #         return "error"
     def bart(text):
+        words = text.split()
+        word_count=len(words)
         try:
             input_ids = bart_tokenizer(text, truncation=True, padding='longest', return_tensors='pt').input_ids
             summary_ids = bart_model.generate(input_ids,min_length=10, max_length=80, num_beams=4, early_stopping=True)
             summary = bart_tokenizer.decode(summary_ids[0], skip_special_tokens=True)
             print('Normal bart ',summary)
+            summary_word=summary.split()
+            summary_count=len(summary_word)
+            print('Word count summ',summary_count)
             return summary
         except Exception as e:
             print("Error:", e)
@@ -101,11 +106,16 @@ class SummarizerModel:
         
     def convo_bart(text):
         try:
+            words = text.split()
+            word_count=len(words)
+            print('Word count input',word_count)
             conversation=text
             inputs = conversation_tokenizer.encode(conversation, return_tensors='pt')
             summary_ids = conversation_model.generate(inputs, num_beams=4, max_length=200, early_stopping=True)
             summary = conversation_tokenizer.decode(summary_ids.squeeze(), skip_special_tokens=True)
             print("Generated summary:", summary) 
+            summary_word=summary.split()
+            summary_count=len(summary_word)
             return summary
         except Exception as e:
             print("Error:", e)
@@ -113,9 +123,11 @@ class SummarizerModel:
         
         
         
-          
-    def lsa(text,num_sent):
+    def lsa(text):
         try:
+            words = text.split()
+            word_count = len(words)
+            print('Word count input', word_count)
             stop_words = set(stopwords.words('english'))
             wordnet_lemmatizer = WordNetLemmatizer()
             sentences = nltk.sent_tokenize(text)
@@ -127,21 +139,32 @@ class SummarizerModel:
                 clean_sentences.append(' '.join(words))
             vectorizer = TfidfVectorizer()
             vectorized_sentences = vectorizer.fit_transform(clean_sentences)
-            lsa_model = TruncatedSVD(n_components=1)
-            lsa_model.fit(vectorized_sentences)
-            sentence_scores = vectorized_sentences.dot(lsa_model.components_.T)
-            top_sentence_indices = np.argsort(sentence_scores.flatten())[::-1][:num_sent]
-            top_sentence_indices.sort()
-            summary = ' '.join([sentences[i] for i in top_sentence_indices])
-            print(summary)
-            return summary
+            svd_model = TruncatedSVD(n_components=1)
+            svd_model.fit(vectorized_sentences)
+            sentence_scores = vectorized_sentences.dot(svd_model.components_.T)
+            threshold = np.mean(sentence_scores)
+            summary = ''
+            for i, sentence in enumerate(sentences):
+                if sentence_scores[i] > threshold:
+                    summary += sentence + ' '
+            summary = summary.strip()
+            summary_word = summary.split()
+            summary_count = len(summary_word)
+            print('Word count summ', summary_count)
+            if summary_count <= word_count//2:
+                return summary
+            else:
+                return summary[:word_count//2]
         except Exception as e:
-            print('l',e)
+            print('lsa', e)
             return "error"
 
 
-    def kl(text,n_sentences):
-        print(n_sentences)
+
+    def kl(text):
+        words = text.split()
+        word_count=len(words)
+        print('Word count input',word_count)
         try:
             stop_words = set(stopwords.words('english'))
             words = [word.lower() for word in word_tokenize(text) if word.isalnum() and word.lower() not in stop_words]
@@ -153,25 +176,29 @@ class SummarizerModel:
                     word_freq[word] /= max_freq
 
             summary = ''
-            for i, sentence in enumerate(sent_tokenize(text)):
-                sentence_words = [word.lower() for word in word_tokenize(sentence) if word.isalnum()]
-                sentence_freq = Counter(sentence_words)
-                # Compute KL divergence only for words in both the text and the sentence
-                common_words = set(word_freq.keys()) & set(sentence_freq.keys())
-                if common_words:
-                    sentence_kl_div = sum(word_freq[i] * np.log2(word_freq[i] / sentence_freq[i]) for i in common_words)
-                else:
-                    sentence_kl_div = float('inf')
-                if i < n_sentences:
-                    summary += sentence + ' '
-                else:
-                    # Compute KL divergence for the whole text and the current sentence
+            for sentence in sent_tokenize(text):
+                    sentence_words = [word.lower() for word in word_tokenize(sentence) if word.isalnum()]
+                    sentence_freq = Counter(sentence_words)
+                    # Compute KL divergence only for words in both the text and the sentence
+                    common_words = set(word_freq.keys()) & set(sentence_freq.keys())
+                    if common_words:
+                        sentence_kl_div = sum(word_freq[i] * np.log2(word_freq[i] / sentence_freq[i]) for i in common_words)
+                    else:
+                        sentence_kl_div = float('inf')
+                    # Compare KL divergence of sentence with previous sentence(s)
                     common_words = set(word_freq.keys()) & set(sentence_freq.keys())
                     new_sentence_score = sum(word_freq[i] * np.log2(word_freq[i] / sentence_freq[i]) for i in common_words)
                     if new_sentence_score > sentence_kl_div:
-                        summary = summary.replace(summary.split()[-1], sentence, 1)
+                        summary = sentence
+                    summary = summary.strip() + ' ' + sentence
             summary = summary.strip()
-            return summary
+            summary_word=summary.split()
+            summary_count=len(summary_word)
+            print('Word count summ',summary_count)
+            if summary_count<=word_count//2:
+                return summary
+            else:
+                return summary[:word_count//2]
         except Exception as e:
             print('kl',e)
             return 'error'
