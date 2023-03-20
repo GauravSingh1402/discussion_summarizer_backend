@@ -146,39 +146,14 @@ def reset_password():
 @app.route('/summarize', methods=['GET', 'POST'])
 
 def summary():
-    def classify_text(text):
-        f=0
-        gi=0
-        try:
-            keywords = {
-            'interview':["formal", "polite", "respectful", "professional", "appropriate", "courteous",
-                          "informal", "relaxed", "friendly", "lighthearted", "engaging", "natural", 
-                          "tech interview", "placement interview", "algorithm", "data structure", 
-                          "problem-solving", "coding", "software engineering", "agile methodology", 
-                          "object-oriented programming", "test-driven development", "version control", 
-                          "database management", "networking", "cybersecurity", "cloud computing", 
-                          "artificial intelligence", "machine learning", "big data","Speaker 1","Speaker 2","Interviewer","Interviewee"],
-            }
-            for category, words in keywords.items():
-                for word in words:
-                    if word.lower() in text.lower():
-                        f=1
-                        if category=='interview':
-                            gi+=1
-                        else:
-                            continue
-                if gi>=1:
-                    return 'interview'
-                else:
-                    return 'General'
-        except Exception as e:
-            print("error",e)
     text_obj = request.get_json()
     input_text = text_obj['text']
     num_sent = text_obj['num_sent']
     try:
-        processed_text = services.Service.listen(input_text)
-        genre=classify_text(processed_text)
+        transalate_text = services.Service.translate_text(input_text)
+        processed_text = services.Service.listen(transalate_text)
+        genre=services.Service.classify_text(processed_text)
+        print(transalate_text,processed_text,genre)
         bart = models.SummarizerModel.bart(processed_text)
         convo_bart = models.SummarizerModel.convo_bart(processed_text)
         title=models.SummarizerModel.title(bart)
@@ -188,7 +163,7 @@ def summary():
             summary = {
                 'title': title,
                 'convo_bart':convo_bart,
-                'bart':bart
+                'bart':bart,
             }
             return jsonify({"summary": summary}),200
         else:
