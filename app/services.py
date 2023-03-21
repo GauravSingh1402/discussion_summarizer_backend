@@ -19,9 +19,10 @@ class Service:
             'interview':["formal", "polite", "respectful", "professional", "appropriate", "courteous",
                           "informal", "relaxed", "friendly", "lighthearted", "engaging", "natural", 
                           "tech interview", "placement interview", "algorithm", "data structure", 
-                          "problem-solving", "coding", "software engineering", "agile methodology", 
+                          "problem-solving", "coding", "software engineering", "agile method  ology", 
                           "object-oriented programming", "test-driven development", "version control", 
-                          "database management", "networking", "cybersecurity", "cloud computing", 
+                          "database management", "networking", "cybersecurity", "cloud computing",
+                          "spk_1","Friend 1","Friend 2","Candidate :", "Interviewer :", "Interviewee :",
                           "artificial intelligence", "machine learning", "big data","Speaker 1","Speaker 2","Interviewer","Interviewee"],
             }
             for category, words in keywords.items():
