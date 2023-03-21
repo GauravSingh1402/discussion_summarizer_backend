@@ -153,12 +153,15 @@ def summary():
         transalate_text = services.Service.translate_text(input_text)
         processed_text = services.Service.listen(transalate_text)
         genre=services.Service.classify_text(processed_text)
-        print(transalate_text,processed_text,genre)
         bart = models.SummarizerModel.bart(processed_text)
         convo_bart = models.SummarizerModel.convo_bart(processed_text)
-        title=models.SummarizerModel.title(bart)
-        lsa= models.SummarizerModel.lsa(input_text)
-        kl = models.SummarizerModel.kl(input_text)
+        lsa= models.SummarizerModel.lsa(transalate_text)
+        kl = models.SummarizerModel.kl(transalate_text)
+        if genre=="interview":
+            title=models.SummarizerModel.title(convo_bart)
+        else:
+            title=models.SummarizerModel.title(bart)
+        print('KL_Summary',kl)
         if genre=="interview":
             summary = {
                 'title': title,
