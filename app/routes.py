@@ -148,21 +148,19 @@ def reset_password():
 def summary():
     text_obj = request.get_json()
     input_text = text_obj['text']
-    num_sent = text_obj['num_sent']
+    genre=text_obj['isConversation']
     try:
         transalate_text = services.Service.translate_text(input_text)
         processed_text = services.Service.listen(transalate_text)
-        genre=services.Service.classify_text(processed_text)
         bart = models.SummarizerModel.bart(processed_text)
         convo_bart = models.SummarizerModel.convo_bart(processed_text)
         lsa= models.SummarizerModel.lsa(transalate_text)
         kl = models.SummarizerModel.kl(transalate_text)
-        if genre=="interview":
+        if genre==True:
             title=models.SummarizerModel.title(convo_bart)
         else:
             title=models.SummarizerModel.title(bart)
-        print('KL_Summary',kl)
-        if genre=="interview":
+        if genre==True:
             summary = {
                 'title': title,
                 'convo_bart':convo_bart,

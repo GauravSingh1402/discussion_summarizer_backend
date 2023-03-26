@@ -11,7 +11,6 @@ from string import punctuation
 from collections import defaultdict
 from heapq import nlargest
 from transformers import T5ForConditionalGeneration, T5Tokenizer
-import torch
 from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
 from sklearn.feature_extraction.text import TfidfVectorizer
@@ -20,7 +19,6 @@ from nltk.tokenize import sent_tokenize, word_tokenize
 from collections import Counter
 from transformers import BartForConditionalGeneration, BartTokenizer, AdamW
 from transformers import AutoTokenizer, T5ForConditionalGeneration
-import torch
 API_URL = "https://api-inference.huggingface.co/models/Hridayesh7/autotrain-summasense-3584196302"
 
 

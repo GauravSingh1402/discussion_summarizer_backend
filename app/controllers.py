@@ -337,11 +337,18 @@ class AudioController:
     def forgot_password(email):
         e_mail=email
         try:
-            token = create_access_token(identity=email)
-            msg = Message('Reset Your Password', sender=os.environ.get('MAIL_USERNAME'), recipients=[e_mail])
-            msg.body = f"Click the link to reset your password: https://summa-sense.vercel.app/reset_password/{token}"
-            mail.send(msg)
-            return jsonify({"data": "success"})
+            result = db.user.find_one({"email": email}, {'_id': 0, 'first_name': 1, 'last_name': 1,'password': 1,'isGoogle':1})
+            if result!=None:
+                if result['isGoogle']==True:
+                    return jsonify({"data":"Google"})
+                else:
+                    token = create_access_token(identity=email)
+                    msg = Message('Reset Your Password', sender=os.environ.get('MAIL_USERNAME'), recipients=[e_mail])
+                    msg.body = f"Click the link to reset your password: http://localhost:3000/reset_password/{token}"
+                    mail.send(msg)
+                    return jsonify({"data": "success"})
+            else:
+                return jsonify({"data":"User doesnt exist"})
         except Exception as e:
             print(e)
             return "error"
